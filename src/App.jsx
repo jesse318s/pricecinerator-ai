@@ -186,12 +186,16 @@ function App() {
           </div>
         </form>
 
-        {!priceOutputIsLoading ? (
+        {priceOutputIsLoading ? (
+          <>
+            <div className="loader"></div>
+          </>
+        ) : (
           <>
             <button onClick={() => predictPrice()}>Predict Price</button>
             <p>Price: ${priceOutput}</p>
           </>
-        ) : null}
+        )}
       </div>
     </>
   );
