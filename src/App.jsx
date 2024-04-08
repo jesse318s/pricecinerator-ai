@@ -5,9 +5,9 @@ import * as brain from "brain.js";
 
 const originalTrainingDataLength = trainingData.length;
 const neuralNetworkConfig = {
-  hiddenLayers: [5, 5], // Number of neurons in each hidden layer (e.g., [5, 5] means two hidden layers with 5 neurons each
-  inputSize: 10, // Number of input neurons (e.g., for 10 features like game genre, platform, year of release, etc.)
-  outputSize: 1, // Number of output neurons (e.g., for predicting a single price)
+  hiddenLayers: [5, 5], // Number of neurons in each hidden layer
+  inputSize: 10, // Number of input neurons (features)
+  outputSize: 1, // Number of output neurons (predictions)
   hiddenLayerActivation: "relu", // Activation function for the hidden layer neurons
   reluAlpha: 0.005, // Slope of the activation function for the hidden layer neurons
   outputLayerActivation: "linear", // Activation function for the output layer neurons
@@ -15,9 +15,9 @@ const neuralNetworkConfig = {
 const neuralNetworkTrainingOptions = {
   iterations: 100000, // The maximum times to iterate the training data
   timeout: 30000, // Maximum training time in milliseconds
-  learningRate: 0.9, // This is a multiplier that determines how much to adjust the weights of your network with respect the loss gradient during each step of your training. A higher learning rate means the model will learn faster, but it may also overshoot the optimal solution.
-  decayRate: 0.9, // This is a multiplier that is used to decrease the learning rate over time (or over epochs). This is done to ensure that the learning rate doesn't stay too high for too long, which could cause the model to miss the optimal solution.
-  momentum: 0.05, // This is a multiplier that takes into account the previous changes in the weights to accelerate learning in the right direction, thus leading to faster convergence.
+  learningRate: 0.9, // The learning rate, how much to change the weights at each iteration
+  decayRate: 0.9, // The learning rate decay over time
+  momentum: 0.05, // How much to let previous iterations influence the current one
   errorThresh: 0.00001, // Error threshold to reach before completing the training
   minimize: true, // Whether to minimize or maximize the error function
   log: true, // Whether to console.log() progress periodically
