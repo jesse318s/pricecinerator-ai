@@ -26,6 +26,12 @@ button {
   border: 2px solid white;
 }
 
+.sized_box {
+  width: 90%;
+  word-wrap: break-word;
+  margin: 10px;
+}
+
 .loader {
   border: 10px solid rgb(255, 200, 0);
   border-top: 10px solid rgb(255, 100, 0);

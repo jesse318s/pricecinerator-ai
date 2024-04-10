@@ -75,6 +75,8 @@ function App() {
   const [yearInput, setYearInput] = useState(1977);
   const [priceOutput, setPriceOutput] = useState(0);
   const [priceOutputIsLoading, setPriceOutputIsLoading] = useState(false);
+  const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
+    useState("");
 
   const runNeuralNetwork = (predictionYear) => {
     try {
@@ -117,6 +119,10 @@ function App() {
       console.log(trainingData);
       neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
       neuralNetwork.train(trainingData, neuralNetworkTrainingOptions);
+
+      if (document.getElementById("serialization_Mode").checked)
+        setSerializedNeuralNetworkText(neuralNetwork.toFunction().toString());
+
       predictionResult = neuralNetwork.run(gameInput);
       return predictionResult["price"];
     } catch (err) {
@@ -135,6 +141,7 @@ function App() {
 
       trainingIsIncomplete = true;
       setPriceOutputIsLoading(true);
+      setSerializedNeuralNetworkText("");
 
       setTimeout(() => {
         setPriceOutput((1000 * runNeuralNetwork(predictionYear)).toFixed(2));
@@ -221,12 +228,14 @@ function App() {
             <h3>Prediction Options</h3>
 
             <div className="box_row">
+              <label htmlFor="normal_Mode">Normal Mode:</label>
+              <input type="radio" id="normal_Mode" name="mode" defaultChecked />
+
               <label htmlFor="performance_Mode">Performance Mode:</label>
-              <input
-                type="checkbox"
-                id="performance_Mode"
-                name="performance_Mode"
-              />
+              <input type="radio" id="performance_Mode" name="mode" />
+
+              <label htmlFor="serialization_Mode">Serialization Mode:</label>
+              <input type="radio" id="serialization_Mode" name="mode" />
             </div>
           </div>
         </form>
@@ -240,6 +249,8 @@ function App() {
             <button onClick={() => predictPrice()}>Predict Price</button>
 
             <h3>Price: ${priceOutput}</h3>
+
+            <div className="sized_box">{serializedNeuralNetworkText}</div>
           </>
         )}
       </div>
