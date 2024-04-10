@@ -2,6 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import { trainingData } from "./constants/trainingData";
 import * as brain from "brain.js";
+import { serializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 
 const originalTrainingDataLength = trainingData.length;
 const neuralNetworkConfig = {
@@ -22,7 +23,10 @@ const neuralNetworkTrainingOptions = {
   minimize: true, // Whether to minimize or maximize the error function
   log: true, // Whether to console.log() progress periodically
   logPeriod: 10000, // How many iterations between logging
+  callback: () => (trainingIsIncomplete = false), // Callback for iterations
+  callbackPeriod: 100000, // How many iterations between calling the callback
 };
+let trainingIsIncomplete = false;
 let trainingDataIsLoaded = false;
 export let neuralNetwork;
 
@@ -72,10 +76,10 @@ function App() {
   const [priceOutput, setPriceOutput] = useState(0);
   const [priceOutputIsLoading, setPriceOutputIsLoading] = useState(false);
 
-  const runNeuralNetwork = () => {
+  const runNeuralNetwork = (predictionYear) => {
     try {
       const gameInput = {
-        year: yearInput / 10000,
+        year: predictionYear / 10000,
         genre_Action: document.getElementById("genre_Action").checked ? 1 : 0,
         genre_Adventure: document.getElementById("genre_Adventure").checked
           ? 1
@@ -96,6 +100,13 @@ function App() {
       };
       let predictionResult;
 
+      if (document.getElementById("performance_Mode").checked) {
+        trainingIsIncomplete = false;
+        serializedNeuralNetwork.run(gameInput);
+        predictionResult = serializedNeuralNetwork.run(gameInput);
+        return predictionResult["price"];
+      }
+
       if (trainingDataIsLoaded)
         trainingData.length = originalTrainingDataLength;
 
@@ -115,11 +126,24 @@ function App() {
 
   const predictPrice = () => {
     try {
-      if (yearInput < 1977) setYearInput(1977);
+      let predictionYear = yearInput;
 
+      if (predictionYear < 1977) {
+        predictionYear = 1977;
+        setYearInput(1977);
+      }
+
+      trainingIsIncomplete = true;
       setPriceOutputIsLoading(true);
+
       setTimeout(() => {
-        setPriceOutput((1000 * runNeuralNetwork()).toFixed(2));
+        setPriceOutput((1000 * runNeuralNetwork(predictionYear)).toFixed(2));
+
+        if (trainingIsIncomplete)
+          alert(
+            "The neural network took a long time to train. Performance mode is recommended."
+          );
+
         setPriceOutputIsLoading(false);
       }, 0);
     } catch (err) {
@@ -132,57 +156,78 @@ function App() {
       <div className="panel">
         <form>
           <div className="box">
-            <label htmlFor="year">Year:</label>
-            <input
-              type="number"
-              id="year"
-              name="year"
-              value={yearInput}
-              onChange={(e) => setYearInput(e.target.value)}
-            />
+            <h3>Game Input</h3>
+
+            <div className="box_row">
+              <label htmlFor="year">Year:</label>
+              <input
+                type="number"
+                id="year"
+                name="year"
+                value={yearInput}
+                onChange={(e) => setYearInput(e.target.value)}
+              />
+            </div>
+
+            <div className="box_row">
+              <label htmlFor="genre_Action">Action:</label>
+              <input type="checkbox" id="genre_Action" name="genre_Action" />
+
+              <label htmlFor="genre_Adventure">Adventure:</label>
+              <input
+                type="checkbox"
+                id="genre_Adventure"
+                name="genre_Adventure"
+              />
+
+              <label htmlFor="genre_RPG">RPG:</label>
+              <input type="checkbox" id="genre_RPG" name="genre_RPG" />
+
+              <label htmlFor="genre_Simulation">Simulation:</label>
+              <input
+                type="checkbox"
+                id="genre_Simulation"
+                name="genre_Simulation"
+              />
+
+              <label htmlFor="genre_Strategy">Strategy:</label>
+              <input
+                type="checkbox"
+                id="genre_Strategy"
+                name="genre_Strategy"
+              />
+
+              <label htmlFor="genre_Sports">Sports:</label>
+              <input type="checkbox" id="genre_Sports" name="genre_Sports" />
+
+              <label htmlFor="genre_Puzzle">Puzzle:</label>
+              <input type="checkbox" id="genre_Puzzle" name="genre_Puzzle" />
+            </div>
+
+            <div className="box_row">
+              <label htmlFor="platform_Console">Console:</label>
+              <input
+                type="checkbox"
+                id="platform_Console"
+                name="platform_Console"
+              />
+
+              <label htmlFor="platform_PC">PC:</label>
+              <input type="checkbox" id="platform_PC" name="platform_PC" />
+            </div>
           </div>
 
           <div className="box">
-            <label htmlFor="genre_Action">Action:</label>
-            <input type="checkbox" id="genre_Action" name="genre_Action" />
+            <h3>Prediction Options</h3>
 
-            <label htmlFor="genre_Adventure">Adventure:</label>
-            <input
-              type="checkbox"
-              id="genre_Adventure"
-              name="genre_Adventure"
-            />
-
-            <label htmlFor="genre_RPG">RPG:</label>
-            <input type="checkbox" id="genre_RPG" name="genre_RPG" />
-
-            <label htmlFor="genre_Simulation">Simulation:</label>
-            <input
-              type="checkbox"
-              id="genre_Simulation"
-              name="genre_Simulation"
-            />
-
-            <label htmlFor="genre_Strategy">Strategy:</label>
-            <input type="checkbox" id="genre_Strategy" name="genre_Strategy" />
-
-            <label htmlFor="genre_Sports">Sports:</label>
-            <input type="checkbox" id="genre_Sports" name="genre_Sports" />
-
-            <label htmlFor="genre_Puzzle">Puzzle:</label>
-            <input type="checkbox" id="genre_Puzzle" name="genre_Puzzle" />
-          </div>
-
-          <div className="box">
-            <label htmlFor="platform_Console">Console:</label>
-            <input
-              type="checkbox"
-              id="platform_Console"
-              name="platform_Console"
-            />
-
-            <label htmlFor="platform_PC">PC:</label>
-            <input type="checkbox" id="platform_PC" name="platform_PC" />
+            <div className="box_row">
+              <label htmlFor="performance_Mode">Performance Mode:</label>
+              <input
+                type="checkbox"
+                id="performance_Mode"
+                name="performance_Mode"
+              />
+            </div>
           </div>
         </form>
 
@@ -193,7 +238,8 @@ function App() {
         ) : (
           <>
             <button onClick={() => predictPrice()}>Predict Price</button>
-            <p>Price: ${priceOutput}</p>
+
+            <h3>Price: ${priceOutput}</h3>
           </>
         )}
       </div>
