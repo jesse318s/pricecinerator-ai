@@ -17,11 +17,13 @@ describe("App", () => {
 
   test("Predict Price button is rendered", () => {
     const buttonElement = screen.getByText("Predict Price");
+
     expect(buttonElement).toBeInTheDocument();
   });
 
   test("Training Mode checkbox is rendered", () => {
     const checkboxElement = screen.getByText("Training Mode:");
+
     expect(checkboxElement).toBeInTheDocument();
   });
 

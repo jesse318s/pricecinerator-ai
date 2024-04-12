@@ -35,16 +35,15 @@ const handlePerformance = (gameInput) => {
     const predictionResult = serializedNeuralNetwork.run(gameInput);
 
     trainingIsIncomplete = false;
-
     return predictionResult["price"];
   } catch (err) {
     console.error(err);
   }
 };
 
-const generateGameObjects = (numGames, baseYear, basePrice) => {
+const generateGameObjects = (baseYear, basePrice) => {
   try {
-    for (let i = 0; i < numGames; i++) {
+    for (let i = 0; i < originalTrainingDataLength; i++) {
       const year = baseYear + Math.random() * 10;
       const priceFluctuation =
         (Math.random() < 0.5 ? -1 : 1) * 0.25 * Math.random();
@@ -137,9 +136,9 @@ function App() {
       if (trainingDataIsLoaded)
         trainingData.length = originalTrainingDataLength;
 
-      generateGameObjects(originalTrainingDataLength, 1977, 39);
-      generateGameObjects(originalTrainingDataLength, 2000, 49);
-      generateGameObjects(originalTrainingDataLength, 2030, 69);
+      generateGameObjects(1977, 39);
+      generateGameObjects(2000, 49);
+      generateGameObjects(2030, 69);
       trainingDataIsLoaded = true;
       console.log(trainingData);
       neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
