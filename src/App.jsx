@@ -30,6 +30,18 @@ let trainingIsIncomplete = false;
 let trainingDataIsLoaded = false;
 export let neuralNetwork;
 
+const handlePerformance = (gameInput) => {
+  try {
+    const predictionResult = serializedNeuralNetwork.run(gameInput);
+
+    trainingIsIncomplete = false;
+
+    return predictionResult["price"];
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const generateGameObjects = (numGames, baseYear, basePrice) => {
   try {
     for (let i = 0; i < numGames; i++) {
@@ -78,6 +90,23 @@ function App() {
   const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
     useState("");
 
+  const handleTraining = (neuralNetwork) => {
+    try {
+      const newNeuralNetwork = neuralNetwork.toFunction();
+
+      setSerializedNeuralNetworkText(newNeuralNetwork.toString());
+
+      if (
+        confirm(
+          "TRAINING COMPLETE - Would you like to save this model for use in Performance Mode? (It'll be lost on refresh)"
+        )
+      )
+        serializedNeuralNetwork.run = newNeuralNetwork;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const runNeuralNetwork = (predictionYear) => {
     try {
       const gameInput = {
@@ -102,12 +131,8 @@ function App() {
       };
       let predictionResult;
 
-      if (document.getElementById("performance_Mode").checked) {
-        trainingIsIncomplete = false;
-        serializedNeuralNetwork.run(gameInput);
-        predictionResult = serializedNeuralNetwork.run(gameInput);
-        return predictionResult["price"];
-      }
+      if (document.getElementById("performance_Mode").checked)
+        return handlePerformance(gameInput);
 
       if (trainingDataIsLoaded)
         trainingData.length = originalTrainingDataLength;
@@ -120,8 +145,11 @@ function App() {
       neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
       neuralNetwork.train(trainingData, neuralNetworkTrainingOptions);
 
-      if (document.getElementById("serialization_Mode").checked)
-        setSerializedNeuralNetworkText(neuralNetwork.toFunction().toString());
+      if (
+        document.getElementById("training_Mode").checked &&
+        !trainingIsIncomplete
+      )
+        handleTraining(neuralNetwork);
 
       predictionResult = neuralNetwork.run(gameInput);
       return predictionResult["price"];
@@ -147,9 +175,7 @@ function App() {
         setPriceOutput((1000 * runNeuralNetwork(predictionYear)).toFixed(2));
 
         if (trainingIsIncomplete)
-          alert(
-            "The neural network took a long time to train. Performance mode is recommended."
-          );
+          alert("TRAINING INCOMPLETE - Performance mode is recommended.");
 
         setPriceOutputIsLoading(false);
       }, 0);
@@ -228,14 +254,16 @@ function App() {
             <h3>Prediction Options</h3>
 
             <div className="box_row">
-              <label htmlFor="normal_Mode">Normal Mode:</label>
-              <input type="radio" id="normal_Mode" name="mode" defaultChecked />
-
               <label htmlFor="performance_Mode">Performance Mode:</label>
-              <input type="radio" id="performance_Mode" name="mode" />
+              <input
+                type="radio"
+                id="performance_Mode"
+                name="mode"
+                defaultChecked
+              />
 
-              <label htmlFor="serialization_Mode">Serialization Mode:</label>
-              <input type="radio" id="serialization_Mode" name="mode" />
+              <label htmlFor="training_Mode">Training Mode:</label>
+              <input type="radio" id="training_Mode" name="mode" />
             </div>
           </div>
         </form>
@@ -247,12 +275,18 @@ function App() {
         ) : (
           <>
             <button onClick={() => predictPrice()}>Predict Price</button>
-
             <h3>Price: ${priceOutput}</h3>
-
-            <div className="sized_box">{serializedNeuralNetworkText}</div>
           </>
         )}
+
+        {!trainingIsIncomplete && serializedNeuralNetworkText ? (
+          <>
+            <div className="sized_box">
+              <h3>Serialized neural network text:</h3>
+              {serializedNeuralNetworkText}
+            </div>
+          </>
+        ) : null}
       </div>
     </>
   );

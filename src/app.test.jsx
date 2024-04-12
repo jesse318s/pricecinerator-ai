@@ -13,20 +13,35 @@ jest.mock("brain.js", () => {
 });
 
 describe("App", () => {
-  let buttonElement;
-
-  beforeEach(() => {
-    render(<App />);
-    buttonElement = screen.getByText("Predict Price");
-  });
+  beforeEach(() => render(<App />));
 
   test("Predict Price button is rendered", () => {
+    const buttonElement = screen.getByText("Predict Price");
     expect(buttonElement).toBeInTheDocument();
   });
 
-  test("Predict Price button functions as expected", async () => {
-    const priceElement = screen.getByText("Price: $0");
+  test("Training Mode checkbox is rendered", () => {
+    const checkboxElement = screen.getByText("Training Mode:");
+    expect(checkboxElement).toBeInTheDocument();
+  });
 
+  test("Predict Price button functions as expected in Performance Mode", () => {
+    const buttonElement = screen.getByText("Predict Price");
+    const h3Element = screen.getByText("Price: $0");
+
+    fireEvent.click(buttonElement);
+
+    waitFor(() => {
+      expect(h3Element).toHaveTextContent("Price: $45.94");
+    });
+  });
+
+  test("Predict Price button functions as expected in Training Mode", async () => {
+    const checkboxElement = screen.getByText("Training Mode:");
+    const buttonElement = screen.getByText("Predict Price");
+    const h3Element = screen.getByText("Price: $0");
+
+    fireEvent.click(checkboxElement);
     fireEvent.click(buttonElement);
 
     await waitFor(() => {
@@ -48,7 +63,7 @@ describe("App", () => {
     expect(neuralNetwork.run()).toStrictEqual({ price: 0.09 });
 
     waitFor(() => {
-      expect(priceElement).toHaveTextContent("Price: $90.00");
+      expect(h3Element).toHaveTextContent("Price: $90.00");
     });
   });
 });
