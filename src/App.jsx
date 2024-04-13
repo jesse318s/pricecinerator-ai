@@ -9,18 +9,17 @@ import {
 import * as brain from "brain.js";
 import { serializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 
-const originalTrainingDataLength = originalTrainingData.length;
 const trainingData = originalTrainingData.slice();
 
 const generateGameObjects = (baseYear, basePrice) => {
   try {
-    for (let i = 0; i < originalTrainingDataLength; i++) {
+    for (let i = 0; i < originalTrainingData.length; i++) {
       const year = baseYear + Math.random() * 10;
       const priceFluctuation =
         (Math.random() < 0.5 ? -1 : 1) * 0.25 * Math.random();
       const price = basePrice * (1 + priceFluctuation);
       const randomIndex = Math.floor(
-        Math.random() * originalTrainingDataLength
+        Math.random() * originalTrainingData.length
       );
       const {
         genre_Adventure,
@@ -87,7 +86,8 @@ function App() {
 
       if (
         confirm(
-          "TRAINING COMPLETE - Would you like to save this model for use in Performance Mode? (It'll be lost on refresh)"
+          "TRAINING COMPLETE - Would you like to save this model for use in Performance Mode?" +
+            " (It'll be lost on refresh)"
         )
       )
         serializedNeuralNetwork.run = newNeuralNetwork;
@@ -111,12 +111,13 @@ function App() {
         platform_PC: gameInput.platform_PC ? 1 : 0,
       };
       let predictionResult;
+      let neuralNetwork;
 
       if (predictionOptions.performanceMode)
         return handlePerformance(gameInputFormatted);
 
       if (trainingDataIsLoaded.current)
-        trainingData.length = originalTrainingDataLength;
+        trainingData.length = originalTrainingData.length;
 
       generateGameObjects(
         gameObjectGenerationOptions.lowBaseYear,
@@ -367,4 +368,3 @@ function App() {
 }
 
 export default App;
-export let neuralNetwork;
