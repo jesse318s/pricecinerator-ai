@@ -1,45 +1,16 @@
 import "./App.css";
-import { useState } from "react";
-import { trainingData } from "./constants/trainingData";
+import { useState, useRef } from "react";
+import { trainingData as originalTrainingData } from "./constants/trainingData";
+import {
+  neuralNetworkConfig,
+  gameObjectGenerationOptions,
+  neuralNetworkTrainingOptions,
+} from "./constants/neuralNetworkSettings";
 import * as brain from "brain.js";
 import { serializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 
-const originalTrainingDataLength = trainingData.length;
-const neuralNetworkConfig = {
-  hiddenLayers: [5, 5], // Number of neurons in each hidden layer
-  inputSize: 10, // Number of input neurons (features)
-  outputSize: 1, // Number of output neurons (predictions)
-  hiddenLayerActivation: "relu", // Activation function for the hidden layer neurons
-  reluAlpha: 0.005, // Slope of the activation function for the hidden layer neurons
-  outputLayerActivation: "linear", // Activation function for the output layer neurons
-};
-const neuralNetworkTrainingOptions = {
-  iterations: 100000, // The maximum times to iterate the training data
-  timeout: 30000, // Maximum training time in milliseconds
-  learningRate: 0.9, // The learning rate, how much to change the weights at each iteration
-  decayRate: 0.9, // The learning rate decay over time
-  momentum: 0.05, // How much to let previous iterations influence the current one
-  errorThresh: 0.00001, // Error threshold to reach before completing the training
-  minimize: true, // Whether to minimize or maximize the error function
-  log: true, // Whether to console.log() progress periodically
-  logPeriod: 10000, // How many iterations between logging
-  callback: () => (trainingIsIncomplete = false), // Callback for iterations
-  callbackPeriod: 100000, // How many iterations between calling the callback
-};
-let trainingIsIncomplete = false;
-let trainingDataIsLoaded = false;
-export let neuralNetwork;
-
-const handlePerformance = (gameInput) => {
-  try {
-    const predictionResult = serializedNeuralNetwork.run(gameInput);
-
-    trainingIsIncomplete = false;
-    return predictionResult["price"];
-  } catch (err) {
-    console.error(err);
-  }
-};
+const originalTrainingDataLength = originalTrainingData.length;
+const trainingData = originalTrainingData.slice();
 
 const generateGameObjects = (baseYear, basePrice) => {
   try {
@@ -83,11 +54,30 @@ const generateGameObjects = (baseYear, basePrice) => {
 };
 
 function App() {
-  const [yearInput, setYearInput] = useState(1977);
-  const [priceOutput, setPriceOutput] = useState(0);
+  const [gameInput, setGameInput] = useState({
+    year: gameObjectGenerationOptions.lowBaseYear,
+  });
+  const [predictionOptions, setPredictionOptions] = useState({
+    performanceMode: true,
+    trainingMode: false,
+  });
   const [priceOutputIsLoading, setPriceOutputIsLoading] = useState(false);
+  const [priceOutput, setPriceOutput] = useState(0);
   const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
     useState("");
+  const trainingIsIncomplete = useRef(false);
+  const trainingDataIsLoaded = useRef(false);
+
+  const handlePerformance = (gameInputFormatted) => {
+    try {
+      const predictionResult = serializedNeuralNetwork.run(gameInputFormatted);
+
+      trainingIsIncomplete.current = false;
+      return predictionResult["price"];
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleTraining = (neuralNetwork) => {
     try {
@@ -108,49 +98,47 @@ function App() {
 
   const runNeuralNetwork = (predictionYear) => {
     try {
-      const gameInput = {
+      const gameInputFormatted = {
         year: predictionYear / 10000,
-        genre_Action: document.getElementById("genre_Action").checked ? 1 : 0,
-        genre_Adventure: document.getElementById("genre_Adventure").checked
-          ? 1
-          : 0,
-        genre_RPG: document.getElementById("genre_RPG").checked ? 1 : 0,
-        genre_Simulation: document.getElementById("genre_Simulation").checked
-          ? 1
-          : 0,
-        genre_Strategy: document.getElementById("genre_Strategy").checked
-          ? 1
-          : 0,
-        genre_Sports: document.getElementById("genre_Sports").checked ? 1 : 0,
-        genre_Puzzle: document.getElementById("genre_Puzzle").checked ? 1 : 0,
-        platform_Console: document.getElementById("platform_Console").checked
-          ? 1
-          : 0,
-        platform_PC: document.getElementById("platform_PC").checked ? 1 : 0,
+        genre_Action: 0,
+        genre_Adventure: gameInput.genre_Adventure ? 1 : 0,
+        genre_RPG: gameInput.genre_RPG ? 1 : 0,
+        genre_Simulation: gameInput.genre_Simulation ? 1 : 0,
+        genre_Strategy: gameInput.genre_Strategy ? 1 : 0,
+        genre_Sports: gameInput.genre_Sports ? 1 : 0,
+        genre_Puzzle: gameInput.genre_Puzzle ? 1 : 0,
+        platform_Console: gameInput.platform_Console ? 1 : 0,
+        platform_PC: gameInput.platform_PC ? 1 : 0,
       };
       let predictionResult;
 
-      if (document.getElementById("performance_Mode").checked)
-        return handlePerformance(gameInput);
+      if (predictionOptions.performanceMode)
+        return handlePerformance(gameInputFormatted);
 
-      if (trainingDataIsLoaded)
+      if (trainingDataIsLoaded.current)
         trainingData.length = originalTrainingDataLength;
 
-      generateGameObjects(1977, 39);
-      generateGameObjects(2000, 49);
-      generateGameObjects(2030, 69);
-      trainingDataIsLoaded = true;
+      generateGameObjects(
+        gameObjectGenerationOptions.lowBaseYear,
+        gameObjectGenerationOptions.lowBasePrice
+      );
+      generateGameObjects(
+        gameObjectGenerationOptions.medBaseYear,
+        gameObjectGenerationOptions.medBasePrice
+      );
+      generateGameObjects(
+        gameObjectGenerationOptions.highBaseYear,
+        gameObjectGenerationOptions.highBasePrice
+      );
+      trainingDataIsLoaded.current = true;
       console.log(trainingData);
       neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
       neuralNetwork.train(trainingData, neuralNetworkTrainingOptions);
 
-      if (
-        document.getElementById("training_Mode").checked &&
-        !trainingIsIncomplete
-      )
+      if (predictionOptions.trainingMode && !trainingIsIncomplete.current)
         handleTraining(neuralNetwork);
 
-      predictionResult = neuralNetwork.run(gameInput);
+      predictionResult = neuralNetwork.run(gameInputFormatted);
       return predictionResult["price"];
     } catch (err) {
       console.error(err);
@@ -159,21 +147,24 @@ function App() {
 
   const predictPrice = () => {
     try {
-      let predictionYear = yearInput;
+      let predictionYear = gameInput.year;
 
-      if (predictionYear < 1977) {
-        predictionYear = 1977;
-        setYearInput(1977);
+      if (gameInput.year < gameObjectGenerationOptions.lowBaseYear) {
+        predictionYear = gameObjectGenerationOptions.lowBaseYear;
+        setGameInput({
+          ...gameInput,
+          year: gameObjectGenerationOptions.lowBaseYear,
+        });
       }
 
-      trainingIsIncomplete = true;
+      trainingIsIncomplete.current = true;
       setPriceOutputIsLoading(true);
       setSerializedNeuralNetworkText("");
 
       setTimeout(() => {
         setPriceOutput((1000 * runNeuralNetwork(predictionYear)).toFixed(2));
 
-        if (trainingIsIncomplete)
+        if (trainingIsIncomplete.current)
           alert("TRAINING INCOMPLETE - Performance mode is recommended.");
 
         setPriceOutputIsLoading(false);
@@ -182,6 +173,9 @@ function App() {
       console.error(err);
     }
   };
+
+  neuralNetworkTrainingOptions.callback = () =>
+    (trainingIsIncomplete.current = false);
 
   return (
     <>
@@ -196,30 +190,58 @@ function App() {
                 type="number"
                 id="year"
                 name="year"
-                value={yearInput}
-                onChange={(e) => setYearInput(e.target.value)}
+                value={gameInput.year}
+                onChange={(e) =>
+                  setGameInput({ ...gameInput, year: e.target.value })
+                }
               />
             </div>
 
             <div className="box_row">
               <label htmlFor="genre_Action">Action:</label>
-              <input type="checkbox" id="genre_Action" name="genre_Action" />
+              <input
+                type="checkbox"
+                id="genre_Action"
+                name="genre_Action"
+                onChange={(e) =>
+                  setGameInput({ ...gameInput, genre_Action: e.target.checked })
+                }
+              />
 
               <label htmlFor="genre_Adventure">Adventure:</label>
               <input
                 type="checkbox"
                 id="genre_Adventure"
                 name="genre_Adventure"
+                onChange={(e) =>
+                  setGameInput({
+                    ...gameInput,
+                    genre_Adventure: e.target.checked,
+                  })
+                }
               />
 
               <label htmlFor="genre_RPG">RPG:</label>
-              <input type="checkbox" id="genre_RPG" name="genre_RPG" />
+              <input
+                type="checkbox"
+                id="genre_RPG"
+                name="genre_RPG"
+                onChange={(e) =>
+                  setGameInput({ ...gameInput, genre_RPG: e.target.checked })
+                }
+              />
 
               <label htmlFor="genre_Simulation">Simulation:</label>
               <input
                 type="checkbox"
                 id="genre_Simulation"
                 name="genre_Simulation"
+                onChange={(e) =>
+                  setGameInput({
+                    ...gameInput,
+                    genre_Simulation: e.target.checked,
+                  })
+                }
               />
 
               <label htmlFor="genre_Strategy">Strategy:</label>
@@ -227,13 +249,33 @@ function App() {
                 type="checkbox"
                 id="genre_Strategy"
                 name="genre_Strategy"
+                onChange={(e) =>
+                  setGameInput({
+                    ...gameInput,
+                    genre_Strategy: e.target.checked,
+                  })
+                }
               />
 
               <label htmlFor="genre_Sports">Sports:</label>
-              <input type="checkbox" id="genre_Sports" name="genre_Sports" />
+              <input
+                type="checkbox"
+                id="genre_Sports"
+                name="genre_Sports"
+                onChange={(e) =>
+                  setGameInput({ ...gameInput, genre_Sports: e.target.checked })
+                }
+              />
 
               <label htmlFor="genre_Puzzle">Puzzle:</label>
-              <input type="checkbox" id="genre_Puzzle" name="genre_Puzzle" />
+              <input
+                type="checkbox"
+                id="genre_Puzzle"
+                name="genre_Puzzle"
+                onChange={(e) =>
+                  setGameInput({ ...gameInput, genre_Puzzle: e.target.checked })
+                }
+              />
             </div>
 
             <div className="box_row">
@@ -242,10 +284,23 @@ function App() {
                 type="checkbox"
                 id="platform_Console"
                 name="platform_Console"
+                onChange={(e) =>
+                  setGameInput({
+                    ...gameInput,
+                    platform_Console: e.target.checked,
+                  })
+                }
               />
 
               <label htmlFor="platform_PC">PC:</label>
-              <input type="checkbox" id="platform_PC" name="platform_PC" />
+              <input
+                type="checkbox"
+                id="platform_PC"
+                name="platform_PC"
+                onChange={(e) =>
+                  setGameInput({ ...gameInput, platform_PC: e.target.checked })
+                }
+              />
             </div>
           </div>
 
@@ -258,11 +313,31 @@ function App() {
                 type="radio"
                 id="performance_Mode"
                 name="mode"
+                value={predictionOptions.performanceMode}
                 defaultChecked
+                onChange={(e) =>
+                  setPredictionOptions({
+                    ...predictionOptions,
+                    performanceMode: e.target.checked,
+                    trainingMode: !e.target.checked,
+                  })
+                }
               />
 
               <label htmlFor="training_Mode">Training Mode:</label>
-              <input type="radio" id="training_Mode" name="mode" />
+              <input
+                type="radio"
+                id="training_Mode"
+                name="mode"
+                value={predictionOptions.trainingMode}
+                onChange={(e) =>
+                  setPredictionOptions({
+                    ...predictionOptions,
+                    performanceMode: !e.target.checked,
+                    trainingMode: e.target.checked,
+                  })
+                }
+              />
             </div>
           </div>
         </form>
@@ -278,7 +353,7 @@ function App() {
           </>
         )}
 
-        {!trainingIsIncomplete && serializedNeuralNetworkText ? (
+        {!trainingIsIncomplete.current && serializedNeuralNetworkText ? (
           <>
             <div className="sized_box">
               <h3>Serialized neural network text:</h3>
@@ -292,3 +367,4 @@ function App() {
 }
 
 export default App;
+export let neuralNetwork;
