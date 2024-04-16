@@ -6,8 +6,8 @@ import {
   gameObjectGenerationOptions,
   neuralNetworkTrainingOptions,
 } from "./constants/neuralNetworkSettings";
+import { serializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 import * as brain from "brain.js";
-import { serializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 
 function App() {
   const [gameInput, setGameInput] = useState({
@@ -20,6 +20,9 @@ function App() {
   const [priceOutputIsLoading, setPriceOutputIsLoading] = useState(false);
   const [priceOutput, setPriceOutput] = useState(0);
   const [errMsgTxt, setErrMsgTxt] = useState("");
+  const [serializedNeuralNetwork, setSerializedNeuralNetwork] = useState(
+    originalSerializedNeuralNetwork
+  );
   const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
     useState("");
   const trainingIsIncomplete = useRef(false);
@@ -97,7 +100,7 @@ function App() {
             " (It'll be lost on refresh)"
         )
       )
-        serializedNeuralNetwork.run = newNeuralNetwork;
+        setSerializedNeuralNetwork({ run: newNeuralNetwork });
     } catch (err) {
       console.error(err);
       setErrMsgTxt(err.message);
