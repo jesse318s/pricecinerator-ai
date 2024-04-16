@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { trainingData as originalTrainingData } from "./constants/trainingData";
 import {
   neuralNetworkConfig,
@@ -19,11 +19,17 @@ function App() {
   });
   const [priceOutputIsLoading, setPriceOutputIsLoading] = useState(false);
   const [priceOutput, setPriceOutput] = useState(0);
+  const [errMsgTxt, setErrMsgTxt] = useState("");
   const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
     useState("");
   const trainingIsIncomplete = useRef(false);
   const trainingDataIsLoaded = useRef(false);
   const trainingData = originalTrainingData.slice();
+
+  useEffect(() => {
+    neuralNetworkTrainingOptions.callback = () =>
+      (trainingIsIncomplete.current = false);
+  }, []);
 
   const handlePerformance = (gameInputFormatted) => {
     try {
@@ -33,6 +39,7 @@ function App() {
       return predictionResult["price"];
     } catch (err) {
       console.error(err);
+      setErrMsgTxt(err.message);
     }
   };
 
@@ -74,6 +81,7 @@ function App() {
       }
     } catch (err) {
       console.error(err);
+      setErrMsgTxt(err.message);
     }
   };
 
@@ -92,6 +100,7 @@ function App() {
         serializedNeuralNetwork.run = newNeuralNetwork;
     } catch (err) {
       console.error(err);
+      setErrMsgTxt(err.message);
     }
   };
 
@@ -109,8 +118,6 @@ function App() {
         platform_Console: gameInput.platform_Console ? 1 : 0,
         platform_PC: gameInput.platform_PC ? 1 : 0,
       };
-      let predictionResult;
-      let neuralNetwork;
 
       if (predictionOptions.performanceMode)
         return handlePerformance(gameInputFormatted);
@@ -132,22 +139,28 @@ function App() {
       );
       trainingDataIsLoaded.current = true;
       console.log(trainingData);
-      neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
+
+      const neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
+
       neuralNetwork.train(trainingData, neuralNetworkTrainingOptions);
 
       if (predictionOptions.trainingMode && !trainingIsIncomplete.current)
         handleTraining(neuralNetwork);
 
-      predictionResult = neuralNetwork.run(gameInputFormatted);
+      const predictionResult = neuralNetwork.run(gameInputFormatted);
+
       return predictionResult["price"];
     } catch (err) {
       console.error(err);
+      setErrMsgTxt(err.message);
     }
   };
 
   const predictPrice = () => {
     try {
       let predictionYear = gameInput.year;
+
+      setErrMsgTxt("");
 
       if (gameInput.year < gameObjectGenerationOptions.lowBaseYear) {
         predictionYear = gameObjectGenerationOptions.lowBaseYear;
@@ -168,14 +181,12 @@ function App() {
           alert("TRAINING INCOMPLETE - Performance mode is recommended.");
 
         setPriceOutputIsLoading(false);
-      }, 0);
+      }, 100);
     } catch (err) {
       console.error(err);
+      setErrMsgTxt(err.message);
     }
   };
-
-  neuralNetworkTrainingOptions.callback = () =>
-    (trainingIsIncomplete.current = false);
 
   return (
     <>
@@ -352,6 +363,15 @@ function App() {
             <h3>Price: ${priceOutput}</h3>
           </>
         )}
+
+        {errMsgTxt ? (
+          <>
+            <div className="sized_box">
+              <h3>Error:</h3>
+              {errMsgTxt}
+            </div>
+          </>
+        ) : null}
 
         {!trainingIsIncomplete.current && serializedNeuralNetworkText ? (
           <>

@@ -58,14 +58,14 @@ describe("App", () => {
   test("Predict Price button updates Price heading as expected in Training Mode", async () => {
     const trainingModeCheckbox = screen.getByText("Training Mode:");
     const priceRegex = /Price: \$([1-9]\d{0,2}\.\d{2}|0\.\d*[1-9]\d*)/;
-    let priceHeading;
 
     fireEvent.click(trainingModeCheckbox);
     fireEvent.click(predictPriceButton);
 
     await waitFor(
       () => {
-        priceHeading = screen.getByText(priceRegex);
+        const priceHeading = screen.getByText(priceRegex);
+
         expect(priceHeading).toBeInTheDocument();
       },
       { timeout: 40000 }
