@@ -1,45 +1,81 @@
+:root {
+  --margin: 10px;
+  --padding: 10px;
+  --border-radius: 15px;
+  --border-color: rgb(173, 216, 230);
+  --font-color: rgb(102, 0, 204);
+  --background-color: rgb(230, 230, 180);
+  --box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
 input {
-  margin: 10px 20px 10px 10px;
+  margin: var(--margin) 20px var(--margin) var(--margin);
+  padding: var(--padding);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
 }
 
 button {
-  margin: 10px;
-  font-family: "Times New Roman";
-  font-size: 18.72px;
-  padding: 5px;
+  margin: var(--margin);
+  padding: var(--padding) 20px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--font-color);
+  background-color: var(--border-color);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+button:hover {
+  background-color: rgb(153, 102, 255);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
+  font-family: "Arial";
+  color: var(--font-color);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  padding: var(--padding);
+  box-shadow: var(--box-shadow);
 }
 
-.box {
-  margin: 10px;
-}
-
-.box_row {
-  flex-direction: row;
-  padding: 10px;
-  border: 2px solid white;
+.box,
+.sized_box {
+  margin: var(--margin);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  background-color: var(--background-color);
+  box-shadow: var(--box-shadow);
 }
 
 .sized_box {
   width: 90%;
   word-wrap: break-word;
-  margin: 10px;
+}
+
+.box_row {
+  flex-direction: row;
+  padding: var(--padding);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
 }
 
 .loader {
-  border: 10px solid rgb(255, 200, 0);
-  border-top: 10px solid rgb(255, 100, 0);
+  border: 10px solid var(--border-color);
+  border-top: 10px solid var(--font-color);
   border-radius: 50%;
   width: 60px;
   height: 60px;
   animation: spin 2s linear infinite;
-  margin-top: 10px;
+  margin-top: var(--margin);
 }
 
 @keyframes spin {

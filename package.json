@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run test && npm run build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
+    "deploy:audit-test": "npm audit && npm run test && echo Proceeding to the build stage... && pause && npm run build && gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "test": "jest",

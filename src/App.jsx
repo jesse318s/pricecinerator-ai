@@ -9,49 +9,6 @@ import {
 import * as brain from "brain.js";
 import { serializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 
-const trainingData = originalTrainingData.slice();
-
-const generateGameObjects = (baseYear, basePrice) => {
-  try {
-    for (let i = 0; i < originalTrainingData.length; i++) {
-      const year = baseYear + Math.random() * 10;
-      const priceFluctuation =
-        (Math.random() < 0.5 ? -1 : 1) * 0.25 * Math.random();
-      const price = basePrice * (1 + priceFluctuation);
-      const randomIndex = Math.floor(
-        Math.random() * originalTrainingData.length
-      );
-      const {
-        genre_Adventure,
-        genre_RPG,
-        genre_Simulation,
-        genre_Strategy,
-        genre_Sports,
-        genre_Puzzle,
-        platform_Console,
-        platform_PC,
-      } = trainingData[randomIndex].input;
-
-      trainingData.push({
-        input: {
-          year: year * 0.0001,
-          genre_Adventure,
-          genre_RPG,
-          genre_Simulation,
-          genre_Strategy,
-          genre_Sports,
-          genre_Puzzle,
-          platform_Console,
-          platform_PC,
-        },
-        output: { price: price * 0.001 },
-      });
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 function App() {
   const [gameInput, setGameInput] = useState({
     year: gameObjectGenerationOptions.lowBaseYear,
@@ -66,6 +23,7 @@ function App() {
     useState("");
   const trainingIsIncomplete = useRef(false);
   const trainingDataIsLoaded = useRef(false);
+  const trainingData = originalTrainingData.slice();
 
   const handlePerformance = (gameInputFormatted) => {
     try {
@@ -73,6 +31,47 @@ function App() {
 
       trainingIsIncomplete.current = false;
       return predictionResult["price"];
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const generateGameObjects = (baseYear, basePrice) => {
+    try {
+      for (let i = 0; i < originalTrainingData.length; i++) {
+        const year = baseYear + Math.random() * 10;
+        const priceFluctuation =
+          (Math.random() < 0.5 ? -1 : 1) * 0.25 * Math.random();
+        const price = basePrice * (1 + priceFluctuation);
+        const randomIndex = Math.floor(
+          Math.random() * originalTrainingData.length
+        );
+        const {
+          genre_Adventure,
+          genre_RPG,
+          genre_Simulation,
+          genre_Strategy,
+          genre_Sports,
+          genre_Puzzle,
+          platform_Console,
+          platform_PC,
+        } = trainingData[randomIndex].input;
+
+        trainingData.push({
+          input: {
+            year: year * 0.0001,
+            genre_Adventure,
+            genre_RPG,
+            genre_Simulation,
+            genre_Strategy,
+            genre_Sports,
+            genre_Puzzle,
+            platform_Console,
+            platform_PC,
+          },
+          output: { price: price * 0.001 },
+        });
+      }
     } catch (err) {
       console.error(err);
     }
