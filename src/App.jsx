@@ -30,10 +30,12 @@ function App() {
   const trainingDataIsLoaded = useRef(false);
   const trainingData = originalTrainingData.slice();
 
-  useEffect(() => {
-    neuralNetworkTrainingOptions.callback = () =>
-      (trainingIsIncomplete.current = false);
-  }, []);
+  useEffect(
+    () =>
+      (neuralNetworkTrainingOptions.callback = () =>
+        (trainingIsIncomplete.current = false)),
+    []
+  );
 
   const handlePerformance = (gameInputFormatted) => {
     try {
@@ -112,7 +114,7 @@ function App() {
     try {
       const gameInputFormatted = {
         year: predictionYear / 10000,
-        genre_Action: 0,
+        genre_Action: gameInput.genre_Action ? 1 : 0,
         genre_Adventure: gameInput.genre_Adventure ? 1 : 0,
         genre_RPG: gameInput.genre_RPG ? 1 : 0,
         genre_Simulation: gameInput.genre_Simulation ? 1 : 0,
