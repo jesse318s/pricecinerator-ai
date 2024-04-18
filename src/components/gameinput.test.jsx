@@ -5,10 +5,12 @@ import GameInput from "./GameInput";
 describe("GameInput", () => {
   const defaultYear = "1977";
   let setGameInput;
+  let setPredictionOptions;
   let result;
 
   beforeEach(() => {
     setGameInput = jest.fn();
+    setPredictionOptions = jest.fn();
     result = render(
       <GameInput
         gameInput={{
@@ -17,7 +19,7 @@ describe("GameInput", () => {
         }}
         setGameInput={setGameInput}
         predictionOptions={{}}
-        setPredictionOptions={() => {}}
+        setPredictionOptions={setPredictionOptions}
       />
     );
   });
@@ -39,7 +41,10 @@ describe("GameInput", () => {
           genre_Action: false,
         }}
         setGameInput={setGameInput}
-        predictionOptions={{}}
+        predictionOptions={{
+          performanceMode: true,
+          trainingMode: false,
+        }}
         setPredictionOptions={() => {}}
       />
     );
@@ -56,5 +61,17 @@ describe("GameInput", () => {
       genre_Action: true,
     });
     expect(genreInput.checked).toBe(true);
+  });
+
+  test("predicition option radio button calls setPredictionOptions as expected when clicked", () => {
+    const predictionOptionsInput = result.getByLabelText("Training Mode:");
+
+    expect(predictionOptionsInput.checked).toBe(false);
+    fireEvent.click(predictionOptionsInput);
+    expect(setPredictionOptions).toHaveBeenCalledWith({
+      performanceMode: false,
+      trainingMode: true,
+    });
+    expect(predictionOptionsInput.checked).toBe(true);
   });
 });
