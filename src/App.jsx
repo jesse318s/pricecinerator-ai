@@ -1,14 +1,15 @@
 import "./App.css";
 import { useState, useRef, useEffect } from "react";
 import { trainingData as originalTrainingData } from "./constants/trainingData";
-import {
-  neuralNetworkConfig,
-  gameObjectGenerationOptions,
-  neuralNetworkTrainingOptions,
-} from "./constants/neuralNetworkSettings";
 import { serializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
 import GameInput from "./components/GameInput";
+import { gameObjectGenerationOptions } from "./utils/utils";
+import { generateGameObjects } from "./utils/utils";
 import * as brain from "brain.js";
+import {
+  neuralNetworkConfig,
+  neuralNetworkTrainingOptions,
+} from "./constants/neuralNetworkSettings";
 
 function App() {
   const [gameInput, setGameInput] = useState({
@@ -27,7 +28,6 @@ function App() {
   const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
     useState("");
   const trainingIsIncomplete = useRef(false);
-  const trainingDataIsLoaded = useRef(false);
   const trainingData = originalTrainingData.slice();
 
   useEffect(
@@ -43,48 +43,6 @@ function App() {
 
       trainingIsIncomplete.current = false;
       return predictionResult["price"];
-    } catch (err) {
-      console.error(err);
-      setErrMsgTxt(err.message);
-    }
-  };
-
-  const generateGameObjects = (baseYear, basePrice) => {
-    try {
-      for (let i = 0; i < originalTrainingData.length; i++) {
-        const year = baseYear + Math.random() * 10;
-        const priceFluctuation =
-          (Math.random() < 0.5 ? -1 : 1) * 0.25 * Math.random();
-        const price = basePrice * (1 + priceFluctuation);
-        const randomIndex = Math.floor(
-          Math.random() * originalTrainingData.length
-        );
-        const {
-          genre_Adventure,
-          genre_RPG,
-          genre_Simulation,
-          genre_Strategy,
-          genre_Sports,
-          genre_Puzzle,
-          platform_Console,
-          platform_PC,
-        } = trainingData[randomIndex].input;
-
-        trainingData.push({
-          input: {
-            year: year * 0.0001,
-            genre_Adventure,
-            genre_RPG,
-            genre_Simulation,
-            genre_Strategy,
-            genre_Sports,
-            genre_Puzzle,
-            platform_Console,
-            platform_PC,
-          },
-          output: { price: price * 0.001 },
-        });
-      }
     } catch (err) {
       console.error(err);
       setErrMsgTxt(err.message);
@@ -124,27 +82,21 @@ function App() {
         platform_Console: gameInput.platform_Console ? 1 : 0,
         platform_PC: gameInput.platform_PC ? 1 : 0,
       };
+      const optionsKeys = Object.keys(gameObjectGenerationOptions);
 
       if (predictionOptions.performanceMode)
         return handlePerformance(gameInputFormatted);
 
-      if (trainingDataIsLoaded.current)
-        trainingData.length = originalTrainingData.length;
+      trainingData.length = originalTrainingData.length;
 
-      generateGameObjects(
-        gameObjectGenerationOptions.lowBaseYear,
-        gameObjectGenerationOptions.lowBasePrice
-      );
-      generateGameObjects(
-        gameObjectGenerationOptions.medBaseYear,
-        gameObjectGenerationOptions.medBasePrice
-      );
-      generateGameObjects(
-        gameObjectGenerationOptions.highBaseYear,
-        gameObjectGenerationOptions.highBasePrice
-      );
-      trainingDataIsLoaded.current = true;
-      console.log(trainingData);
+      for (let i = 0; i < optionsKeys.length / 2; i++) {
+        const newTrainingData = generateGameObjects(
+          gameObjectGenerationOptions[optionsKeys[i * 2]],
+          gameObjectGenerationOptions[optionsKeys[i * 2 + 1]]
+        );
+
+        trainingData.splice(trainingData.length, 0, ...newTrainingData);
+      }
 
       const neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
 

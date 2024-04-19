@@ -7,15 +7,6 @@ export const neuralNetworkConfig = {
   outputLayerActivation: "linear", // Activation function for the output layer neurons
 };
 
-export const gameObjectGenerationOptions = {
-  lowBaseYear: 1977, // Base year for past games
-  lowBasePrice: 39, // Base price for past games
-  medBaseYear: 2000, // Base year for recent games
-  medBasePrice: 49, // Base price for recent games
-  highBaseYear: 2030, // Base year for future games
-  highBasePrice: 69, // Base price for future games
-};
-
 export const neuralNetworkTrainingOptions = {
   iterations: 100000, // The maximum times to iterate the training data
   timeout: 30000, // Maximum training time in milliseconds
