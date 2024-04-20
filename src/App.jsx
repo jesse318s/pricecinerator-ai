@@ -1,113 +1,132 @@
 import "./App.css";
-import { useState, useRef, useEffect } from "react";
-import { trainingData as originalTrainingData } from "./constants/trainingData";
-import { serializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetwork";
-import GameInput from "./components/GameInput";
-import { gameObjectGenerationOptions } from "./utils/utils";
-import { generateGameObjects } from "./utils/utils";
-import * as brain from "brain.js";
+import { useState, useRef } from "react";
+import { gameObjectGenerationOptions as originalObjectGenerationOptions } from "./utils/utils";
 import {
-  neuralNetworkConfig,
-  neuralNetworkTrainingOptions,
+  gameNeuralNetworkConfig as originalNeuralNetworkConfig,
+  gameTrainingOptions as originalNetworkTrainingOptions,
 } from "./constants/neuralNetworkSettings";
+import { gameSerializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetworks";
+import { gameTrainingData as originalTrainingData } from "./constants/trainingData";
+import { generateGameObjects as generateOriginalObjects } from "./utils/utils";
+import GameInput from "./components/GameInput";
+import * as brain from "brain.js";
 
 function App() {
-  const [gameInput, setGameInput] = useState({
-    year: gameObjectGenerationOptions.lowBaseYear,
+  const [predictionObjectInput, setPredictionObjectInput] = useState({
+    year: new Date().getFullYear(),
   });
   const [predictionOptions, setPredictionOptions] = useState({
     performanceMode: true,
     trainingMode: false,
   });
-  const [priceOutputIsLoading, setPriceOutputIsLoading] = useState(false);
-  const [priceOutput, setPriceOutput] = useState(0);
+  const [priceOutput, setPriceOutput] = useState("?");
   const [errMsgTxt, setErrMsgTxt] = useState("");
-  const [serializedNeuralNetwork, setSerializedNeuralNetwork] = useState(
-    originalSerializedNeuralNetwork
-  );
-  const [serializedNeuralNetworkText, setSerializedNeuralNetworkText] =
-    useState("");
+  const [trainingText, setTrainingText] = useState("");
   const trainingIsIncomplete = useRef(false);
-  const trainingData = originalTrainingData.slice();
+  const objectGenerationOptions = useRef(originalObjectGenerationOptions);
+  const neuralNetworkTrainingOptions = useRef(originalNetworkTrainingOptions);
+  const serializedNeuralNetwork = useRef(originalSerializedNeuralNetwork);
+  const neuralNetworkConfig = useRef(originalNeuralNetworkConfig);
+  const generatePredictionObjects = useRef(generateOriginalObjects);
+  const trainingData = useRef(originalTrainingData.slice());
 
-  useEffect(
-    () =>
-      (neuralNetworkTrainingOptions.callback = () =>
-        (trainingIsIncomplete.current = false)),
-    []
-  );
-
-  const handlePerformance = (gameInputFormatted) => {
+  const trainNeuralNetwork = () => {
     try {
-      const predictionResult = serializedNeuralNetwork.run(gameInputFormatted);
-
-      trainingIsIncomplete.current = false;
-      return predictionResult["price"];
-    } catch (err) {
-      console.error(err);
-      setErrMsgTxt(err.message);
-    }
-  };
-
-  const handleTraining = (neuralNetwork) => {
-    try {
-      const newNeuralNetwork = neuralNetwork.toFunction();
-
-      setSerializedNeuralNetworkText(newNeuralNetwork.toString());
-
-      if (
-        confirm(
-          "TRAINING COMPLETE - Would you like to save this model for use in Performance Mode?" +
-            " (It'll be lost on refresh)"
-        )
-      )
-        setSerializedNeuralNetwork({ run: newNeuralNetwork });
-    } catch (err) {
-      console.error(err);
-      setErrMsgTxt(err.message);
-    }
-  };
-
-  const runNeuralNetwork = (predictionYear) => {
-    try {
-      const gameInputFormatted = {
-        year: predictionYear / 10000,
-        genre_Action: gameInput.genre_Action ? 1 : 0,
-        genre_Adventure: gameInput.genre_Adventure ? 1 : 0,
-        genre_RPG: gameInput.genre_RPG ? 1 : 0,
-        genre_Simulation: gameInput.genre_Simulation ? 1 : 0,
-        genre_Strategy: gameInput.genre_Strategy ? 1 : 0,
-        genre_Sports: gameInput.genre_Sports ? 1 : 0,
-        genre_Puzzle: gameInput.genre_Puzzle ? 1 : 0,
-        platform_Console: gameInput.platform_Console ? 1 : 0,
-        platform_PC: gameInput.platform_PC ? 1 : 0,
-      };
-      const optionsKeys = Object.keys(gameObjectGenerationOptions);
-
-      if (predictionOptions.performanceMode)
-        return handlePerformance(gameInputFormatted);
-
-      trainingData.length = originalTrainingData.length;
+      const optionsKeys = Object.keys(objectGenerationOptions.current);
+      const neuralNetwork = new brain.NeuralNetwork(
+        neuralNetworkConfig.current
+      );
+      const trainingDataInitialLength = trainingData.current.length;
 
       for (let i = 0; i < optionsKeys.length / 2; i++) {
-        const newTrainingData = generateGameObjects(
-          gameObjectGenerationOptions[optionsKeys[i * 2]],
-          gameObjectGenerationOptions[optionsKeys[i * 2 + 1]]
+        const newTrainingData = generatePredictionObjects.current(
+          objectGenerationOptions.current[optionsKeys[i * 2]],
+          objectGenerationOptions.current[optionsKeys[i * 2 + 1]]
         );
 
-        trainingData.splice(trainingData.length, 0, ...newTrainingData);
+        trainingData.current.splice(
+          trainingData.current.length,
+          0,
+          ...newTrainingData
+        );
       }
 
-      const neuralNetwork = new brain.NeuralNetwork(neuralNetworkConfig);
+      neuralNetwork.train(
+        trainingData.current,
+        neuralNetworkTrainingOptions.current
+      );
+      trainingData.current.length = trainingDataInitialLength;
 
-      neuralNetwork.train(trainingData, neuralNetworkTrainingOptions);
+      return neuralNetwork;
+    } catch (err) {
+      console.error(err);
+      setErrMsgTxt(err.message);
+    }
+  };
 
-      if (predictionOptions.trainingMode && !trainingIsIncomplete.current)
-        handleTraining(neuralNetwork);
+  const runNeuralNetwork = () => {
+    try {
+      const year =
+        predictionObjectInput.year < objectGenerationOptions.current.lowBaseYear
+          ? objectGenerationOptions.current.lowBaseYear
+          : predictionObjectInput.year;
+      const predictionObjectInputFormatted = {
+        year: year / 10000,
+      };
 
-      const predictionResult = neuralNetwork.run(gameInputFormatted);
+      for (const key in predictionObjectInput) {
+        if (key.includes("genre") || key.includes("platform"))
+          predictionObjectInputFormatted[key] = predictionObjectInput[key]
+            ? 1
+            : 0;
+      }
 
-      return predictionResult["price"];
+      setTrainingText("");
+
+      if (predictionOptions.performanceMode) {
+        const price =
+          1000 *
+          serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
+            "price"
+          ];
+
+        setPriceOutput(price.toFixed(2));
+
+        return;
+      }
+
+      trainingIsIncomplete.current = true;
+
+      const neuralNetwork = trainNeuralNetwork(year);
+
+      setTrainingText(
+        "Your device may not be performant enough for Training Mode. Your training wasn't saved."
+      );
+
+      if (trainingIsIncomplete.current) {
+        const price =
+          1000 *
+          serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
+            "price"
+          ];
+
+        setPriceOutput(price.toFixed(2));
+
+        return;
+      }
+
+      serializedNeuralNetwork.current = {
+        run: neuralNetwork.toFunction(),
+      };
+
+      const newSerializedNeuralNetwork = neuralNetwork.toFunction().toString();
+
+      setTrainingText(newSerializedNeuralNetwork);
+
+      const price =
+        1000 * neuralNetwork.run(predictionObjectInputFormatted)["price"];
+
+      setPriceOutput(price.toFixed(2));
     } catch (err) {
       console.error(err);
       setErrMsgTxt(err.message);
@@ -116,30 +135,23 @@ function App() {
 
   const predictPrice = () => {
     try {
-      let predictionYear = gameInput.year;
-
       setErrMsgTxt("");
 
-      if (gameInput.year < gameObjectGenerationOptions.lowBaseYear) {
-        predictionYear = gameObjectGenerationOptions.lowBaseYear;
-        setGameInput({
-          ...gameInput,
-          year: gameObjectGenerationOptions.lowBaseYear,
+      if (
+        predictionObjectInput.year < objectGenerationOptions.current.lowBaseYear
+      )
+        setPredictionObjectInput({
+          ...predictionObjectInput,
+          year: objectGenerationOptions.current.lowBaseYear,
         });
-      }
 
-      trainingIsIncomplete.current = true;
-      setPriceOutputIsLoading(true);
-      setSerializedNeuralNetworkText("");
+      setPriceOutput(undefined);
 
-      setTimeout(() => {
-        setPriceOutput((1000 * runNeuralNetwork(predictionYear)).toFixed(2));
+      neuralNetworkTrainingOptions.current.callback = () => {
+        trainingIsIncomplete.current = false;
+      };
 
-        if (trainingIsIncomplete.current)
-          alert("TRAINING INCOMPLETE - Performance mode is recommended.");
-
-        setPriceOutputIsLoading(false);
-      }, 100);
+      setTimeout(runNeuralNetwork, 200);
     } catch (err) {
       console.error(err);
       setErrMsgTxt(err.message);
@@ -150,19 +162,19 @@ function App() {
     <>
       <div className="panel">
         <GameInput
-          gameInput={gameInput}
-          setGameInput={setGameInput}
+          predictionObjectInput={predictionObjectInput}
+          setPredictionObjectInput={setPredictionObjectInput}
           predictionOptions={predictionOptions}
           setPredictionOptions={setPredictionOptions}
         />
 
-        {priceOutputIsLoading ? (
+        {!priceOutput ? (
           <>
             <div className="loader"></div>
           </>
         ) : (
           <>
-            <button onClick={() => predictPrice()}>Predict Price</button>
+            <button onClick={predictPrice}>Predict Price</button>
             <h3>Price: ${priceOutput}</h3>
           </>
         )}
@@ -176,11 +188,11 @@ function App() {
           </>
         ) : null}
 
-        {!trainingIsIncomplete.current && serializedNeuralNetworkText ? (
+        {trainingText ? (
           <>
             <div className="sized_box">
-              <h3>Serialized neural network text:</h3>
-              {serializedNeuralNetworkText}
+              <h3>Training Data:</h3>
+              {trainingText}
             </div>
           </>
         ) : null}

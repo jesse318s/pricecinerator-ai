@@ -1,4 +1,4 @@
-export const trainingData = [
+export const gameTrainingData = [
   // Pong (Atari 2600)
   {
     input: {

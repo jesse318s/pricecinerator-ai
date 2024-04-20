@@ -1,4 +1,4 @@
-export const serializedNeuralNetwork = {
+export const gameSerializedNeuralNetwork = {
   run: (input) => {
     input = new Float32Array([
       input["year"],

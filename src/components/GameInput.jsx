@@ -1,6 +1,6 @@
 function GameInput({
-  gameInput,
-  setGameInput,
+  predictionObjectInput,
+  setPredictionObjectInput,
   predictionOptions,
   setPredictionOptions,
 }) {
@@ -16,9 +16,12 @@ function GameInput({
               type="number"
               id="year"
               name="year"
-              value={gameInput.year}
+              value={predictionObjectInput.year}
               onChange={(e) =>
-                setGameInput({ ...gameInput, year: e.target.value })
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
+                  year: e.target.value,
+                })
               }
             />
           </div>
@@ -30,7 +33,10 @@ function GameInput({
               id="genre_Action"
               name="genre_Action"
               onChange={(e) =>
-                setGameInput({ ...gameInput, genre_Action: e.target.checked })
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
+                  genre_Action: e.target.checked,
+                })
               }
             />
 
@@ -40,8 +46,8 @@ function GameInput({
               id="genre_Adventure"
               name="genre_Adventure"
               onChange={(e) =>
-                setGameInput({
-                  ...gameInput,
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
                   genre_Adventure: e.target.checked,
                 })
               }
@@ -53,7 +59,10 @@ function GameInput({
               id="genre_RPG"
               name="genre_RPG"
               onChange={(e) =>
-                setGameInput({ ...gameInput, genre_RPG: e.target.checked })
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
+                  genre_RPG: e.target.checked,
+                })
               }
             />
 
@@ -63,8 +72,8 @@ function GameInput({
               id="genre_Simulation"
               name="genre_Simulation"
               onChange={(e) =>
-                setGameInput({
-                  ...gameInput,
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
                   genre_Simulation: e.target.checked,
                 })
               }
@@ -76,8 +85,8 @@ function GameInput({
               id="genre_Strategy"
               name="genre_Strategy"
               onChange={(e) =>
-                setGameInput({
-                  ...gameInput,
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
                   genre_Strategy: e.target.checked,
                 })
               }
@@ -89,7 +98,10 @@ function GameInput({
               id="genre_Sports"
               name="genre_Sports"
               onChange={(e) =>
-                setGameInput({ ...gameInput, genre_Sports: e.target.checked })
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
+                  genre_Sports: e.target.checked,
+                })
               }
             />
 
@@ -99,7 +111,10 @@ function GameInput({
               id="genre_Puzzle"
               name="genre_Puzzle"
               onChange={(e) =>
-                setGameInput({ ...gameInput, genre_Puzzle: e.target.checked })
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
+                  genre_Puzzle: e.target.checked,
+                })
               }
             />
           </div>
@@ -111,8 +126,8 @@ function GameInput({
               id="platform_Console"
               name="platform_Console"
               onChange={(e) =>
-                setGameInput({
-                  ...gameInput,
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
                   platform_Console: e.target.checked,
                 })
               }
@@ -124,7 +139,10 @@ function GameInput({
               id="platform_PC"
               name="platform_PC"
               onChange={(e) =>
-                setGameInput({ ...gameInput, platform_PC: e.target.checked })
+                setPredictionObjectInput({
+                  ...predictionObjectInput,
+                  platform_PC: e.target.checked,
+                })
               }
             />
           </div>

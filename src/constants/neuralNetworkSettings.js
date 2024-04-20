@@ -1,4 +1,4 @@
-export const neuralNetworkConfig = {
+export const gameNeuralNetworkConfig = {
   hiddenLayers: [5, 5], // Number of neurons in each hidden layer
   inputSize: 10, // Number of input neurons (features)
   outputSize: 1, // Number of output neurons (predictions)
@@ -7,7 +7,7 @@ export const neuralNetworkConfig = {
   outputLayerActivation: "linear", // Activation function for the output layer neurons
 };
 
-export const neuralNetworkTrainingOptions = {
+export const gameTrainingOptions = {
   iterations: 100000, // The maximum times to iterate the training data
   timeout: 30000, // Maximum training time in milliseconds
   learningRate: 0.9, // The learning rate, how much to change the weights at each iteration
@@ -18,4 +18,5 @@ export const neuralNetworkTrainingOptions = {
   log: true, // Whether to console.log() progress periodically
   logPeriod: 10000, // How many iterations between logging
   callbackPeriod: 100000, // How many iterations between calling the callback
+  callback: null, // Function to call at each callbackPeriod
 };

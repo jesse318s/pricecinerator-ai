@@ -1,46 +1,47 @@
 import React from "react";
+import { gameObjectGenerationOptions } from "../utils/utils";
 import { render, fireEvent } from "@testing-library/react";
 import GameInput from "./GameInput";
 
 describe("GameInput", () => {
-  const defaultYear = "1977";
-  let setGameInput;
+  const defaultYear = new Date().getFullYear().toString();
+  let setPredictionObjectInput;
   let setPredictionOptions;
   let result;
 
   beforeEach(() => {
-    setGameInput = jest.fn();
+    setPredictionObjectInput = jest.fn();
     setPredictionOptions = jest.fn();
     result = render(
       <GameInput
-        gameInput={{
+        predictionObjectInput={{
           year: defaultYear,
           genre_Action: false,
         }}
-        setGameInput={setGameInput}
+        setPredictionObjectInput={setPredictionObjectInput}
         predictionOptions={{}}
         setPredictionOptions={setPredictionOptions}
       />
     );
   });
 
-  test("Year field calls setGameInput correctly when a year is input", () => {
+  test("Year field calls setPredictionObjectInput correctly when a year is input", () => {
     const yearInput = result.getByLabelText("Year:");
-    const testYear = "2000";
+    const testYear = gameObjectGenerationOptions.lowBaseYear.toString();
 
     expect(yearInput.value).toBe(defaultYear);
     fireEvent.change(yearInput, { target: { value: testYear } });
-    expect(setGameInput).toHaveBeenCalledWith({
+    expect(setPredictionObjectInput).toHaveBeenCalledWith({
       year: testYear,
       genre_Action: false,
     });
     result.rerender(
       <GameInput
-        gameInput={{
+        predictionObjectInput={{
           year: testYear,
           genre_Action: false,
         }}
-        setGameInput={setGameInput}
+        setPredictionObjectInput={setPredictionObjectInput}
         predictionOptions={{
           performanceMode: true,
           trainingMode: false,
@@ -51,12 +52,12 @@ describe("GameInput", () => {
     expect(yearInput.value).toBe(testYear);
   });
 
-  test("genre checkbox calls setGameInput as expected when clicked", () => {
+  test("genre checkbox calls setPredictionObjectInput as expected when clicked", () => {
     const genreInput = result.getByLabelText("Action:");
 
     expect(genreInput.checked).toBe(false);
     fireEvent.click(genreInput);
-    expect(setGameInput).toHaveBeenCalledWith({
+    expect(setPredictionObjectInput).toHaveBeenCalledWith({
       year: defaultYear,
       genre_Action: true,
     });
