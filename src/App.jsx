@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { gameObjectGenerationOptions as originalObjectGenerationOptions } from "./utils/utils";
 import {
   gameNeuralNetworkConfig as originalNeuralNetworkConfig,
@@ -11,9 +11,12 @@ import { generateGameObjects as generateOriginalObjects } from "./utils/utils";
 import GameInput from "./components/GameInput";
 import * as brain from "brain.js";
 
+const neuralNetworkTypes = { game: "game" };
+const neuralNetworkComps = { game: GameInput };
+
 function App() {
   const [predictionObjectInput, setPredictionObjectInput] = useState({
-    year: new Date().getFullYear(),
+    year: new Date().getFullYear().toString(),
   });
   const [predictionOptions, setPredictionOptions] = useState({
     performanceMode: true,
@@ -22,6 +25,9 @@ function App() {
   const [priceOutput, setPriceOutput] = useState("?");
   const [errMsgTxt, setErrMsgTxt] = useState("");
   const [trainingText, setTrainingText] = useState("");
+  const [neuralNetworkType, setNeuralNetworkType] = useState(
+    neuralNetworkTypes.game
+  );
   const trainingIsIncomplete = useRef(false);
   const objectGenerationOptions = useRef(originalObjectGenerationOptions);
   const neuralNetworkTrainingOptions = useRef(originalNetworkTrainingOptions);
@@ -29,6 +35,30 @@ function App() {
   const neuralNetworkConfig = useRef(originalNeuralNetworkConfig);
   const generatePredictionObjects = useRef(generateOriginalObjects);
   const trainingData = useRef(originalTrainingData.slice());
+
+  const displayNeuralNetworkComp = () => {
+    switch (neuralNetworkType) {
+      case neuralNetworkTypes.game:
+        objectGenerationOptions.current = originalObjectGenerationOptions;
+        neuralNetworkTrainingOptions.current = originalNetworkTrainingOptions;
+        serializedNeuralNetwork.current = originalSerializedNeuralNetwork;
+        neuralNetworkConfig.current = originalNeuralNetworkConfig;
+        generatePredictionObjects.current = generateOriginalObjects;
+        trainingData.current = originalTrainingData.slice();
+        break;
+    }
+
+    setPredictionObjectInput({
+      year: new Date().getFullYear().toString(),
+    });
+    setPredictionOptions({
+      performanceMode: true,
+      trainingMode: false,
+    });
+    setPriceOutput("?");
+    setErrMsgTxt("");
+    setTrainingText("");
+  };
 
   const trainNeuralNetwork = () => {
     try {
@@ -75,7 +105,7 @@ function App() {
       };
 
       for (const key in predictionObjectInput) {
-        if (key.includes("genre") || key.includes("platform"))
+        if (key !== "year")
           predictionObjectInputFormatted[key] = predictionObjectInput[key]
             ? 1
             : 0;
@@ -142,7 +172,7 @@ function App() {
       )
         setPredictionObjectInput({
           ...predictionObjectInput,
-          year: objectGenerationOptions.current.lowBaseYear,
+          year: objectGenerationOptions.current.lowBaseYear.toString(),
         });
 
       setPriceOutput(undefined);
@@ -158,15 +188,34 @@ function App() {
     }
   };
 
+  useEffect(displayNeuralNetworkComp, [neuralNetworkType]);
+
   return (
     <>
       <div className="panel">
-        <GameInput
-          predictionObjectInput={predictionObjectInput}
-          setPredictionObjectInput={setPredictionObjectInput}
-          predictionOptions={predictionOptions}
-          setPredictionOptions={setPredictionOptions}
-        />
+        <div className="menu">
+          {Object.keys(neuralNetworkTypes).map((type) => (
+            <button
+              key={type}
+              onClick={() => {
+                setNeuralNetworkType(type);
+              }}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {neuralNetworkComps[neuralNetworkType] ? (
+          <>
+            {React.createElement(neuralNetworkComps[neuralNetworkType], {
+              predictionObjectInput: predictionObjectInput,
+              setPredictionObjectInput: setPredictionObjectInput,
+              predictionOptions: predictionOptions,
+              setPredictionOptions: setPredictionOptions,
+            })}
+          </>
+        ) : null}
 
         {!priceOutput ? (
           <>

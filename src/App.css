@@ -47,6 +47,13 @@ button:hover {
   box-shadow: var(--box-shadow);
 }
 
+.menu {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
 .box,
 .sized_box {
   margin: var(--margin);
