@@ -7,7 +7,7 @@ import {
 } from "./constants/neuralNetworkSettings";
 import { gameSerializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetworks";
 import { gameTrainingData as originalTrainingData } from "./constants/trainingData";
-import { generateGameObjects as generateOriginalObjects } from "./utils/utils";
+import { generateTrainingObjects } from "./utils/utils";
 import GameInput from "./components/GameInput";
 import * as brain from "brain.js";
 
@@ -33,7 +33,6 @@ function App() {
   const neuralNetworkTrainingOptions = useRef(originalNetworkTrainingOptions);
   const serializedNeuralNetwork = useRef(originalSerializedNeuralNetwork);
   const neuralNetworkConfig = useRef(originalNeuralNetworkConfig);
-  const generatePredictionObjects = useRef(generateOriginalObjects);
   const trainingData = useRef(originalTrainingData.slice());
 
   const displayNeuralNetworkComp = () => {
@@ -43,7 +42,6 @@ function App() {
         neuralNetworkTrainingOptions.current = originalNetworkTrainingOptions;
         serializedNeuralNetwork.current = originalSerializedNeuralNetwork;
         neuralNetworkConfig.current = originalNeuralNetworkConfig;
-        generatePredictionObjects.current = generateOriginalObjects;
         trainingData.current = originalTrainingData.slice();
         break;
     }
@@ -69,9 +67,10 @@ function App() {
       const trainingDataInitialLength = trainingData.current.length;
 
       for (let i = 0; i < optionsKeys.length / 2; i++) {
-        const newTrainingData = generatePredictionObjects.current(
+        const newTrainingData = generateTrainingObjects(
           objectGenerationOptions.current[optionsKeys[i * 2]],
-          objectGenerationOptions.current[optionsKeys[i * 2 + 1]]
+          objectGenerationOptions.current[optionsKeys[i * 2 + 1]],
+          trainingData.current
         );
 
         trainingData.current.splice(
@@ -85,6 +84,9 @@ function App() {
         trainingData.current,
         neuralNetworkTrainingOptions.current
       );
+
+      console.log(trainingData.current);
+
       trainingData.current.length = trainingDataInitialLength;
 
       return neuralNetwork;

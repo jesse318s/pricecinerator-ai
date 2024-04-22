@@ -1,40 +1,35 @@
-import { gameTrainingData } from "../constants/trainingData";
+export const generateTrainingObjects = (baseYear, basePrice, trainingData) => {
+  const newTrainingData = [];
 
-export const generateGameObjects = (baseYear, basePrice) => {
-  const trainingData = [];
-
-  for (let i = 0; i < gameTrainingData.length; i++) {
-    const year = baseYear + Math.random() * 10;
+  for (let i = 0; i < trainingData.length; i++) {
+    const randomYear = baseYear + Math.random() * 10;
     const priceFluctuation =
       (Math.random() < 0.5 ? -1 : 1) * 0.25 * Math.random();
-    const price = basePrice * (1 + priceFluctuation);
-    const randomIndex = Math.floor(Math.random() * gameTrainingData.length);
-    const {
-      genre_Adventure,
-      genre_RPG,
-      genre_Simulation,
-      genre_Strategy,
-      genre_Sports,
-      genre_Puzzle,
-      platform_Console,
-      platform_PC,
-    } = gameTrainingData[randomIndex].input;
+    const randomPrice = basePrice * (1 + priceFluctuation);
+    const randomIndex = Math.floor(Math.random() * trainingData.length);
+    const randomTrainingData = trainingData[randomIndex].input;
 
-    trainingData.push({
-      input: {
-        year: year * 0.0001,
-        genre_Adventure,
-        genre_RPG,
-        genre_Simulation,
-        genre_Strategy,
-        genre_Sports,
-        genre_Puzzle,
-        platform_Console,
-        platform_PC,
+    const filteredRandomData = Object.keys(randomTrainingData).reduce(
+      (acc, key) => {
+        if (key !== "year" && key !== "price") {
+          acc[key] = randomTrainingData[key];
+        }
+
+        return acc;
       },
-      output: { price: price * 0.001 },
+      {}
+    );
+
+    const input = {
+      year: randomYear * 0.0001,
+      ...filteredRandomData,
+    };
+
+    newTrainingData.push({
+      input,
+      output: { price: randomPrice * 0.001 },
     });
   }
 
-  return trainingData;
+  return newTrainingData;
 };
