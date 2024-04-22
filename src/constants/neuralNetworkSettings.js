@@ -21,7 +21,7 @@ export const gameTrainingOptions = {
 };
 
 export const gameObjectGenerationOptions = {
-  lowBaseYear: 1977, // The earliest year for the generated objects
+  lowBaseYear: 1977, // The earliest year for the generated objects (required to set a min. year)
   lowBasePrice: 39, // The price for lowBaseYear
   medBaseYear: 2000, // The middle year for the generated objects
   medBasePrice: 49, // The price for medBaseYear

@@ -67,6 +67,8 @@ function App() {
       const trainingDataInitialLength = trainingData.current.length;
 
       for (let i = 0; i < optionsKeys.length / 2; i++) {
+        if (optionsKeys.length === 1) break;
+
         const newTrainingData = generateTrainingObjects(
           objectGenerationOptions.current[optionsKeys[i * 2]],
           objectGenerationOptions.current[optionsKeys[i * 2 + 1]],
