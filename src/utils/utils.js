@@ -11,9 +11,7 @@ export const generateTrainingObjects = (baseYear, basePrice, trainingData) => {
 
     const filteredRandomData = Object.keys(randomTrainingData).reduce(
       (acc, key) => {
-        if (key !== "year" && key !== "price") {
-          acc[key] = randomTrainingData[key];
-        }
+        if (key !== "year") acc[key] = randomTrainingData[key];
 
         return acc;
       },
