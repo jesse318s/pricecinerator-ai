@@ -1,5 +1,5 @@
 import React from "react";
-import { gameObjectGenerationOptions } from "../utils/utils";
+import { gameObjectGenerationOptions } from "../constants/neuralNetworkSettings";
 import { render, fireEvent } from "@testing-library/react";
 import GameInput from "./GameInput";
 

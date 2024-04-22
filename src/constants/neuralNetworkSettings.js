@@ -19,3 +19,12 @@ export const gameTrainingOptions = {
   callbackPeriod: 100000, // How many iterations between calling the callback
   callback: null, // Function to call at each callbackPeriod
 };
+
+export const gameObjectGenerationOptions = {
+  lowBaseYear: 1977, // The earliest year for the generated objects
+  lowBasePrice: 39, // The price for lowBaseYear
+  medBaseYear: 2000, // The middle year for the generated objects
+  medBasePrice: 49, // The price for medBaseYear
+  highBaseYear: 2030, // The latest year for the generated objects
+  highBasePrice: 69, // The price for highBaseYear
+};

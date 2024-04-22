@@ -1,9 +1,9 @@
 import "./App.css";
 import React, { useState, useRef, useEffect } from "react";
-import { gameObjectGenerationOptions as originalObjectGenerationOptions } from "./utils/utils";
 import {
   gameNeuralNetworkConfig as originalNeuralNetworkConfig,
   gameTrainingOptions as originalNetworkTrainingOptions,
+  gameObjectGenerationOptions as originalObjectGenerationOptions,
 } from "./constants/neuralNetworkSettings";
 import { gameSerializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetworks";
 import { gameTrainingData as originalTrainingData } from "./constants/trainingData";

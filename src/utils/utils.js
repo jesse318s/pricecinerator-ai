@@ -1,14 +1,5 @@
 import { gameTrainingData } from "../constants/trainingData";
 
-export const gameObjectGenerationOptions = {
-  lowBaseYear: 1977,
-  lowBasePrice: 39,
-  medBaseYear: 2000,
-  medBasePrice: 49,
-  highBaseYear: 2030,
-  highBasePrice: 69,
-};
-
 export const generateGameObjects = (baseYear, basePrice) => {
   const trainingData = [];
 
