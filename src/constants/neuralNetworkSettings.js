@@ -1,3 +1,9 @@
+export const neuralNetworkTypes = { game: "game" }; // Types of neural networks available
+
+export const neuralNetworkPriceModifiers = {
+  game: 1000,
+}; // Multiplier for the price prediction output
+
 export const gameNeuralNetworkConfig = {
   hiddenLayers: [5, 5], // Number of neurons in each hidden layer
   inputSize: 10, // Number of input neurons (features)

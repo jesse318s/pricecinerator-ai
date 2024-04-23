@@ -12,6 +12,7 @@ describe("GameInput", () => {
   beforeEach(() => {
     setPredictionObjectInput = jest.fn();
     setPredictionOptions = jest.fn();
+
     result = render(
       <GameInput
         predictionObjectInput={{
@@ -35,6 +36,7 @@ describe("GameInput", () => {
       year: testYear,
       genre_Action: false,
     });
+
     result.rerender(
       <GameInput
         predictionObjectInput={{
@@ -49,6 +51,7 @@ describe("GameInput", () => {
         setPredictionOptions={() => {}}
       />
     );
+
     expect(yearInput.value).toBe(testYear);
   });
 

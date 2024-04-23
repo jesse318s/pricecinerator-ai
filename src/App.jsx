@@ -1,6 +1,8 @@
 import "./App.css";
 import React, { useState, useRef, useEffect } from "react";
 import {
+  neuralNetworkTypes,
+  neuralNetworkPriceModifiers,
   gameNeuralNetworkConfig as originalNeuralNetworkConfig,
   gameTrainingOptions as originalNetworkTrainingOptions,
   gameObjectGenerationOptions as originalObjectGenerationOptions,
@@ -11,7 +13,6 @@ import { generateTrainingObjects } from "./utils/utils";
 import GameInput from "./components/GameInput";
 import * as brain from "brain.js";
 
-const neuralNetworkTypes = { game: "game" };
 const neuralNetworkComps = { game: GameInput };
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
   const serializedNeuralNetwork = useRef(originalSerializedNeuralNetwork);
   const neuralNetworkConfig = useRef(originalNeuralNetworkConfig);
   const trainingData = useRef(originalTrainingData.slice());
+  const priceModifier = useRef(neuralNetworkPriceModifiers[neuralNetworkType]);
 
   const displayNeuralNetworkComp = () => {
     switch (neuralNetworkType) {
@@ -56,6 +58,7 @@ function App() {
     setPriceOutput("?");
     setErrMsgTxt("");
     setTrainingText("");
+    priceModifier.current = neuralNetworkPriceModifiers[neuralNetworkType];
   };
 
   const trainNeuralNetwork = () => {
@@ -119,7 +122,7 @@ function App() {
 
       if (predictionOptions.performanceMode) {
         const price =
-          1000 *
+          priceModifier.current *
           serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
             "price"
           ];
@@ -139,7 +142,7 @@ function App() {
 
       if (trainingIsIncomplete.current) {
         const price =
-          1000 *
+          priceModifier.current *
           serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
             "price"
           ];
@@ -158,7 +161,8 @@ function App() {
       setTrainingText(newSerializedNeuralNetwork);
 
       const price =
-        1000 * neuralNetwork.run(predictionObjectInputFormatted)["price"];
+        priceModifier.current *
+        neuralNetwork.run(predictionObjectInputFormatted)["price"];
 
       setPriceOutput(price.toFixed(2));
     } catch (err) {
