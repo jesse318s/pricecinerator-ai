@@ -192,9 +192,8 @@ function App() {
 
       setPriceOutput(undefined);
 
-      neuralNetworkTrainingOptions.current.callback = () => {
-        trainingIsIncomplete.current = false;
-      };
+      neuralNetworkTrainingOptions.current.callback = () =>
+        (trainingIsIncomplete.current = false);
 
       setTimeout(runNeuralNetwork, 200);
     } catch (err) {
@@ -210,12 +209,7 @@ function App() {
       <div className="panel">
         <div className="menu">
           {Object.keys(neuralNetworkSettings.neuralNetworkTypes).map((type) => (
-            <button
-              key={type}
-              onClick={() => {
-                setNeuralNetworkType(type);
-              }}
-            >
+            <button key={type} onClick={() => setNeuralNetworkType(type)}>
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
