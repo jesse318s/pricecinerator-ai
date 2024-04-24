@@ -41,7 +41,7 @@ function App() {
     neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType]
   );
 
-  const displayNeuralNetworkComp = () => {
+  const loadNeuralNetwork = () => {
     objectGenerationOptions.current =
       neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
     neuralNetworkTrainingOptions.current =
@@ -196,7 +196,7 @@ function App() {
     }
   };
 
-  useEffect(displayNeuralNetworkComp, [neuralNetworkType]);
+  useEffect(loadNeuralNetwork, [neuralNetworkType]);
 
   return (
     <>
