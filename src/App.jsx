@@ -1,17 +1,11 @@
 import "./App.css";
 import React, { useState, useRef, useEffect } from "react";
-import {
-  neuralNetworkTypes,
-  neuralNetworkPriceModifiers,
-  gameNeuralNetworkConfig as originalNeuralNetworkConfig,
-  gameTrainingOptions as originalNetworkTrainingOptions,
-  gameObjectGenerationOptions as originalObjectGenerationOptions,
-} from "./constants/neuralNetworkSettings";
-import { gameSerializedNeuralNetwork as originalSerializedNeuralNetwork } from "./constants/serializedNeuralNetworks";
-import { gameTrainingData as originalTrainingData } from "./constants/trainingData";
+import * as neuralNetworkSettings from "./constants/neuralNetworkSettings";
+import * as serializedNeuralNetworks from "./constants/serializedNeuralNetworks";
+import * as neuralNetworkTrainingData from "./constants/trainingData";
+import * as brain from "brain.js";
 import { generateTrainingObjects } from "./utils/utils";
 import GameInput from "./components/GameInput";
-import * as brain from "brain.js";
 
 const neuralNetworkComps = { game: GameInput };
 
@@ -27,27 +21,41 @@ function App() {
   const [errMsgTxt, setErrMsgTxt] = useState("");
   const [trainingText, setTrainingText] = useState("");
   const [neuralNetworkType, setNeuralNetworkType] = useState(
-    neuralNetworkTypes.game
+    neuralNetworkSettings.neuralNetworkTypes.game
   );
   const trainingIsIncomplete = useRef(false);
-  const objectGenerationOptions = useRef(originalObjectGenerationOptions);
-  const neuralNetworkTrainingOptions = useRef(originalNetworkTrainingOptions);
-  const serializedNeuralNetwork = useRef(originalSerializedNeuralNetwork);
-  const neuralNetworkConfig = useRef(originalNeuralNetworkConfig);
-  const trainingData = useRef(originalTrainingData.slice());
-  const priceModifier = useRef(neuralNetworkPriceModifiers[neuralNetworkType]);
+  const objectGenerationOptions = useRef(
+    neuralNetworkSettings.gameObjectGenerationOptions
+  );
+  const neuralNetworkTrainingOptions = useRef(
+    neuralNetworkSettings.gameTrainingOptions
+  );
+  const serializedNeuralNetwork = useRef(
+    serializedNeuralNetworks.gameSerializedNeuralNetwork
+  );
+  const neuralNetworkConfig = useRef(
+    neuralNetworkSettings.gameNeuralNetworkConfig
+  );
+  const trainingData = useRef(
+    neuralNetworkTrainingData.gameTrainingData.slice()
+  );
+  const priceModifier = useRef(
+    neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType]
+  );
 
   const displayNeuralNetworkComp = () => {
-    switch (neuralNetworkType) {
-      case neuralNetworkTypes.game:
-        objectGenerationOptions.current = originalObjectGenerationOptions;
-        neuralNetworkTrainingOptions.current = originalNetworkTrainingOptions;
-        serializedNeuralNetwork.current = originalSerializedNeuralNetwork;
-        neuralNetworkConfig.current = originalNeuralNetworkConfig;
-        trainingData.current = originalTrainingData.slice();
-        break;
-    }
-
+    objectGenerationOptions.current =
+      neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
+    neuralNetworkTrainingOptions.current =
+      neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
+    serializedNeuralNetwork.current =
+      serializedNeuralNetworks[`${neuralNetworkType}SerializedNeuralNetwork`];
+    neuralNetworkConfig.current =
+      neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
+    trainingData.current =
+      neuralNetworkTrainingData[`${neuralNetworkType}TrainingData`];
+    priceModifier.current =
+      neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType];
     setPredictionObjectInput({
       year: new Date().getFullYear().toString(),
     });
@@ -58,7 +66,6 @@ function App() {
     setPriceOutput("?");
     setErrMsgTxt("");
     setTrainingText("");
-    priceModifier.current = neuralNetworkPriceModifiers[neuralNetworkType];
   };
 
   const trainNeuralNetwork = () => {
@@ -202,7 +209,7 @@ function App() {
     <>
       <div className="panel">
         <div className="menu">
-          {Object.keys(neuralNetworkTypes).map((type) => (
+          {Object.keys(neuralNetworkSettings.neuralNetworkTypes).map((type) => (
             <button
               key={type}
               onClick={() => {
