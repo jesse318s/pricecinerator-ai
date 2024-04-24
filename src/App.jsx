@@ -5,9 +5,7 @@ import * as serializedNeuralNetworks from "./constants/serializedNeuralNetworks"
 import * as neuralNetworkTrainingData from "./constants/trainingData";
 import * as brain from "brain.js";
 import { generateTrainingObjects } from "./utils/utils";
-import GameInput from "./components/GameInput";
-
-const neuralNetworkComps = { game: GameInput };
+import PredictionInput from "./components/PredictionInput";
 
 function App() {
   const [predictionObjectInput, setPredictionObjectInput] = useState({
@@ -215,16 +213,13 @@ function App() {
           ))}
         </div>
 
-        {neuralNetworkComps[neuralNetworkType] ? (
-          <>
-            {React.createElement(neuralNetworkComps[neuralNetworkType], {
-              predictionObjectInput: predictionObjectInput,
-              setPredictionObjectInput: setPredictionObjectInput,
-              predictionOptions: predictionOptions,
-              setPredictionOptions: setPredictionOptions,
-            })}
-          </>
-        ) : null}
+        <PredictionInput
+          neuralNetworkType={neuralNetworkType}
+          predictionObjectInput={predictionObjectInput}
+          setPredictionObjectInput={setPredictionObjectInput}
+          predictionOptions={predictionOptions}
+          setPredictionOptions={setPredictionOptions}
+        />
 
         {!priceOutput ? (
           <>

@@ -1,10 +1,12 @@
 import React from "react";
 import { gameObjectGenerationOptions } from "../constants/neuralNetworkSettings";
 import { render, fireEvent } from "@testing-library/react";
-import GameInput from "./GameInput";
+import PredictionInput from "./PredictionInput";
 
-describe("GameInput", () => {
+describe("PredictionInput", () => {
+  const defaultNeuralNetworkType = "game";
   const defaultYear = new Date().getFullYear().toString();
+  const testInputProp = "genre_Action";
   let setPredictionObjectInput;
   let setPredictionOptions;
   let result;
@@ -14,10 +16,11 @@ describe("GameInput", () => {
     setPredictionOptions = jest.fn();
 
     result = render(
-      <GameInput
+      <PredictionInput
+        neuralNetworkType={defaultNeuralNetworkType}
         predictionObjectInput={{
           year: defaultYear,
-          genre_Action: false,
+          [testInputProp]: false,
         }}
         setPredictionObjectInput={setPredictionObjectInput}
         predictionOptions={{}}
@@ -34,14 +37,15 @@ describe("GameInput", () => {
     fireEvent.change(yearInput, { target: { value: testYear } });
     expect(setPredictionObjectInput).toHaveBeenCalledWith({
       year: testYear,
-      genre_Action: false,
+      [testInputProp]: false,
     });
 
     result.rerender(
-      <GameInput
+      <PredictionInput
+        neuralNetworkType={defaultNeuralNetworkType}
         predictionObjectInput={{
           year: testYear,
-          genre_Action: false,
+          [testInputProp]: false,
         }}
         setPredictionObjectInput={setPredictionObjectInput}
         predictionOptions={{
@@ -55,16 +59,20 @@ describe("GameInput", () => {
     expect(yearInput.value).toBe(testYear);
   });
 
-  test("genre checkbox calls setPredictionObjectInput as expected when clicked", () => {
-    const genreInput = result.getByLabelText("Action:");
+  test("checkbox calls setPredictionObjectInput as expected when clicked", () => {
+    const checkboxInput = result.getByLabelText(
+      testInputProp.charAt(0).toUpperCase() +
+        testInputProp.slice(1).replace(/_/g, " ") +
+        ":"
+    );
 
-    expect(genreInput.checked).toBe(false);
-    fireEvent.click(genreInput);
+    expect(checkboxInput.checked).toBe(false);
+    fireEvent.click(checkboxInput);
     expect(setPredictionObjectInput).toHaveBeenCalledWith({
       year: defaultYear,
-      genre_Action: true,
+      [testInputProp]: true,
     });
-    expect(genreInput.checked).toBe(true);
+    expect(checkboxInput.checked).toBe(true);
   });
 
   test("predicition option radio button calls setPredictionOptions as expected when clicked", () => {
