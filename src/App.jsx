@@ -57,10 +57,6 @@ function App() {
     setPredictionObjectInput({
       year: new Date().getFullYear().toString(),
     });
-    setPredictionOptions({
-      performanceMode: true,
-      trainingMode: false,
-    });
     setPriceOutput("?");
     setErrMsgTxt("");
     setTrainingText("");

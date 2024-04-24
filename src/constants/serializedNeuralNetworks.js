@@ -1,5 +1,5 @@
 export const gameSerializedNeuralNetwork = {
-  run: (input) => {
+  run: function anonymous(input) {
     input = new Float32Array([
       input["year"],
       input["genre_Action"],
