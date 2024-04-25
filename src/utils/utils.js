@@ -1,4 +1,9 @@
-export const generateTrainingObjects = (baseYear, basePrice, trainingData) => {
+export const generateTrainingObjects = (
+  baseYear,
+  basePrice,
+  trainingData,
+  priceModifer
+) => {
   const newTrainingData = [];
 
   for (let i = 0; i < trainingData.length; i++) {
@@ -25,7 +30,9 @@ export const generateTrainingObjects = (baseYear, basePrice, trainingData) => {
 
     newTrainingData.push({
       input,
-      output: { price: randomPrice * 0.001 },
+      output: {
+        price: randomPrice / priceModifer,
+      },
     });
   }
 

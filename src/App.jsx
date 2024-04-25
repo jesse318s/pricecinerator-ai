@@ -78,7 +78,8 @@ function App() {
         const newTrainingData = generateTrainingObjects(
           objectGenerationOptions.current[optionsKeys[i * 2]],
           objectGenerationOptions.current[optionsKeys[i * 2 + 1]],
-          trainingData.current
+          trainingData.current,
+          priceModifier.current
         );
 
         trainingData.current.splice(
