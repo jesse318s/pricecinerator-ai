@@ -46,6 +46,8 @@ function App() {
       neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
     neuralNetworkTrainingOptions.current =
       neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
+    neuralNetworkTrainingOptions.current.callback = () =>
+      (trainingIsIncomplete.current = false);
     serializedNeuralNetwork.current =
       serializedNeuralNetworks[`${neuralNetworkType}SerializedNeuralNetwork`];
     neuralNetworkConfig.current =
@@ -153,9 +155,7 @@ function App() {
         return;
       }
 
-      serializedNeuralNetwork.current = {
-        run: neuralNetwork.toFunction(),
-      };
+      serializedNeuralNetwork.current.run = neuralNetwork.toFunction();
 
       const newSerializedNeuralNetwork = neuralNetwork.toFunction().toString();
 
@@ -185,9 +185,6 @@ function App() {
         });
 
       setPriceOutput(undefined);
-
-      neuralNetworkTrainingOptions.current.callback = () =>
-        (trainingIsIncomplete.current = false);
 
       setTimeout(runNeuralNetwork, 200);
     } catch (err) {
