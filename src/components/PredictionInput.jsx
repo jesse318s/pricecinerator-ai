@@ -66,11 +66,11 @@ function PredictionInput({
           <h3>Prediction Options</h3>
 
           <div className="box-row">
-            <label htmlFor="performance_Mode">
+            <label htmlFor="performance-mode">
               Performance Mode:
               <input
                 type="radio"
-                id="performance_Mode"
+                id="performance-mode"
                 name="mode"
                 value={predictionOptions.performanceMode}
                 defaultChecked
@@ -84,11 +84,11 @@ function PredictionInput({
               />
             </label>
 
-            <label htmlFor="training_Mode">
+            <label htmlFor="training-mode">
               Training Mode:
               <input
                 type="radio"
-                id="training_Mode"
+                id="training-mode"
                 name="mode"
                 value={predictionOptions.trainingMode}
                 onChange={(e) =>
