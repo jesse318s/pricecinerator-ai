@@ -228,7 +228,7 @@ function App() {
 
         {errMsgTxt ? (
           <>
-            <div className="sized_box">
+            <div className="sized-box">
               <h3>Error:</h3>
               {errMsgTxt}
             </div>
@@ -237,7 +237,7 @@ function App() {
 
         {trainingText ? (
           <>
-            <div className="sized_box">
+            <div className="sized-box">
               <h3>Training Data:</h3>
               {trainingText}
             </div>

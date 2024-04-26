@@ -56,7 +56,7 @@ button:hover {
 }
 
 .box,
-.sized_box {
+.sized-box {
   margin: var(--margin);
   padding: 20px;
   border-radius: var(--border-radius);
@@ -64,12 +64,12 @@ button:hover {
   box-shadow: var(--box-shadow);
 }
 
-.sized_box {
+.sized-box {
   width: 90%;
   word-wrap: break-word;
 }
 
-.box_row {
+.box-row {
   flex-direction: row;
   padding: var(--padding);
   border: 2px solid var(--border-color);

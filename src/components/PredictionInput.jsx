@@ -18,7 +18,7 @@ function PredictionInput({
             Input
           </h3>
 
-          <div className="box_row">
+          <div className="box-row">
             <label htmlFor="year">
               Year:
               <input
@@ -36,7 +36,7 @@ function PredictionInput({
             </label>
           </div>
 
-          <div className="box_row">
+          <div className="box-row">
             {Object.keys(
               trainingData[neuralNetworkType + "TrainingData"][0].input
             ).map((key) =>
@@ -65,7 +65,7 @@ function PredictionInput({
         <div className="box">
           <h3>Prediction Options</h3>
 
-          <div className="box_row">
+          <div className="box-row">
             <label htmlFor="performance_Mode">
               Performance Mode:
               <input
