@@ -1,5 +1,9 @@
 export const neuralNetworkTypes = { game: "game" }; // Types of neural networks available
 
+export const neuralNetworkYearRanges = {
+  game: { min: 1977, max: 2999 },
+}; // The min and max year allowed for user input
+
 export const neuralNetworkPriceModifiers = {
   game: 1000,
 }; // Multiplier for the price prediction output
@@ -27,7 +31,7 @@ export const gameTrainingOptions = {
 };
 
 export const gameObjectGenerationOptions = {
-  lowBaseYear: 1977, // The earliest year for the generated objects (required to set a min. year)
+  lowBaseYear: 1977, // The earliest year for the generated objects
   lowBasePrice: 39, // The price for lowBaseYear
   medBaseYear: 2000, // The middle year for the generated objects
   medBasePrice: 49, // The price for medBaseYear

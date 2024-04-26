@@ -1,5 +1,5 @@
 import React from "react";
-import { gameObjectGenerationOptions } from "../constants/neuralNetworkSettings";
+import { neuralNetworkYearRanges } from "../constants/neuralNetworkSettings";
 import { render, fireEvent } from "@testing-library/react";
 import PredictionInput from "./PredictionInput";
 
@@ -31,7 +31,8 @@ describe("PredictionInput", () => {
 
   test("Year field calls setPredictionObjectInput correctly when a year is input", () => {
     const yearInput = result.getByLabelText("Year:");
-    const testYear = gameObjectGenerationOptions.lowBaseYear.toString();
+    const testYear =
+      neuralNetworkYearRanges[defaultNeuralNetworkType].min.toString();
 
     expect(yearInput.value).toBe(defaultYear);
     fireEvent.change(yearInput, { target: { value: testYear } });

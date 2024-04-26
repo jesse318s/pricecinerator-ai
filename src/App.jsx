@@ -37,6 +37,9 @@ function App() {
   const trainingData = useRef(
     neuralNetworkTrainingData.gameTrainingData.slice()
   );
+  const neuralNetworkYearRange = useRef(
+    neuralNetworkSettings.neuralNetworkYearRanges[neuralNetworkType]
+  );
   const priceModifier = useRef(
     neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType]
   );
@@ -54,6 +57,8 @@ function App() {
       neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
     trainingData.current =
       neuralNetworkTrainingData[`${neuralNetworkType}TrainingData`];
+    neuralNetworkYearRange.current =
+      neuralNetworkSettings.neuralNetworkYearRanges[neuralNetworkType];
     priceModifier.current =
       neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType];
     setPredictionObjectInput({
@@ -73,7 +78,7 @@ function App() {
       const trainingDataInitialLength = trainingData.current.length;
 
       for (let i = 0; i < optionsKeys.length / 2; i++) {
-        if (optionsKeys.length === 1) break;
+        if (!optionsKeys) break;
 
         const newTrainingData = generateTrainingObjects(
           objectGenerationOptions.current[optionsKeys[i * 2]],
@@ -105,14 +110,24 @@ function App() {
     }
   };
 
+  const validateYear = () => {
+    const { min, max } = neuralNetworkYearRange.current;
+    const year = parseFloat(predictionObjectInput.year);
+    const validatedYear = Math.max(min, Math.min(max, year));
+
+    if (year !== validatedYear)
+      setPredictionObjectInput({
+        ...predictionObjectInput,
+        year: validatedYear,
+      });
+
+    return validatedYear;
+  };
+
   const runNeuralNetwork = () => {
     try {
-      const year =
-        predictionObjectInput.year < objectGenerationOptions.current.lowBaseYear
-          ? objectGenerationOptions.current.lowBaseYear
-          : predictionObjectInput.year;
       const predictionObjectInputFormatted = {
-        year: year / 10000,
+        year: validateYear() / 10000,
       };
 
       for (const key in predictionObjectInput) {
@@ -176,15 +191,6 @@ function App() {
   const predictPrice = () => {
     try {
       setErrMsgTxt("");
-
-      if (
-        predictionObjectInput.year < objectGenerationOptions.current.lowBaseYear
-      )
-        setPredictionObjectInput({
-          ...predictionObjectInput,
-          year: objectGenerationOptions.current.lowBaseYear.toString(),
-        });
-
       setPriceOutput(undefined);
 
       setTimeout(runNeuralNetwork, 200);
