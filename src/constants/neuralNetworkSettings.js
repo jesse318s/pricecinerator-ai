@@ -13,7 +13,6 @@ export const gameNeuralNetworkConfig = {
   inputSize: 10, // Number of input neurons (features)
   outputSize: 1, // Number of output neurons (predictions)
   hiddenLayerActivation: "relu", // Activation function for the hidden layer neurons
-  reluAlpha: 0.005, // Slope of the activation function for the hidden layer neurons
 };
 
 export const gameTrainingOptions = {
