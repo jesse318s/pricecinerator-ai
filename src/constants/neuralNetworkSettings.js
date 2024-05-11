@@ -1,11 +1,16 @@
-export const neuralNetworkTypes = { game: "game" }; // Types of neural networks available
+export const neuralNetworkTypes = {
+  game: "game",
+  bitcoin: "bitcoin",
+}; // Types of neural networks available
 
 export const neuralNetworkYearRanges = {
   game: { min: 1977, max: 2999 },
+  bitcoin: { min: 2025, max: 2199 },
 }; // The min and max year allowed for user input
 
 export const neuralNetworkPriceModifiers = {
   game: 1000,
+  bitcoin: 10000000,
 }; // Multiplier for the price prediction output
 
 export const gameNeuralNetworkConfig = {
@@ -36,4 +41,36 @@ export const gameObjectGenerationOptions = {
   medBasePrice: 49, // The price for medBaseYear
   highBaseYear: 2030, // The latest year for the generated objects
   highBasePrice: 69, // The price for highBaseYear
+};
+
+export const bitcoinNeuralNetworkConfig = {
+  hiddenLayers: [2], // Number of neurons in each hidden layer
+  inputSize: 1, // Number of input neurons (features)
+  outputSize: 1, // Number of output neurons (predictions)
+  hiddenLayerActivation: "relu", // Activation function for the hidden layer neurons
+};
+
+export const bitcoinTrainingOptions = {
+  iterations: 200000, // The maximum times to iterate the training data
+  timeout: 60000, // Maximum training time in milliseconds
+  learningRate: 0.4, // The learning rate, how much to change the weights at each iteration
+  decayRate: 0.5, // The learning rate decay over time
+  momentum: 0.5, // How much to let previous iterations influence the current one
+  errorThresh: 0.00001, // Error threshold to reach before completing the training
+  minimize: true, // Whether to minimize or maximize the error function
+  log: true, // Whether to console.log() progress periodically
+  logPeriod: 20000, // How many iterations between logging
+  callbackPeriod: 200000, // How many iterations between calling the callback
+  callback: null, // Function to call at each callbackPeriod
+};
+
+export const bitcoinObjectGenerationOptions = {
+  lowBaseYear: 2015, // The earliest year for the generated objects
+  lowBasePrice: 320, // The price for lowBaseYear
+  medBaseYear: 2019, // The medium year for the generated objects
+  medBasePrice: 4024, // The price for medBaseYear
+  medHighBaseYear: 2024, // The medium-high year for the generated objects
+  medHighBasePrice: 75000, // The price for medhighBaseYear
+  highBaseYear: 2034, // The latest year for the generated objects
+  highBasePrice: 400000, // The price for highBaseYear
 };

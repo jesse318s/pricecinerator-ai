@@ -453,3 +453,30 @@ export const gameSerializedNeuralNetwork = {
     };
   },
 };
+
+export const bitcoinSerializedNeuralNetwork = {
+  run: function anonymous(input) {
+    input = new Float32Array([input["year"]]);
+    return {
+      price:
+        1 /
+        (1 +
+          1 /
+            Math.exp(
+              15.242166519165039 -
+                (27.244558334350586 * 1) /
+                  (1 +
+                    1 /
+                      Math.exp(
+                        6.703091144561768 - 36.22365951538086 * (input[0] || 0)
+                      )) -
+                (33.605445861816406 * 1) /
+                  (1 +
+                    1 /
+                      Math.exp(
+                        7.80582332611084 - 42.986637115478516 * (input[0] || 0)
+                      ))
+            )),
+    };
+  },
+};
