@@ -5,9 +5,11 @@ import * as serializedNeuralNetworks from "./constants/serializedNeuralNetworks"
 import * as neuralNetworkTrainingData from "./constants/trainingData";
 import * as brain from "brain.js";
 import { generateTrainingObjects } from "./utils/utils";
+import LandingPage from "./components/LandingPage";
 import PredictionInput from "./components/PredictionInput";
 
 function App() {
+  const [isLandingPageVisible, setIsLandingPageVisible] = useState(true);
   const [predictionObjectInput, setPredictionObjectInput] = useState({
     year: new Date().getFullYear().toString(),
   });
@@ -68,6 +70,8 @@ function App() {
     setErrMsgTxt("");
     setTrainingText("");
   };
+
+  const continueToApp = () => setIsLandingPageVisible(false);
 
   const trainNeuralNetwork = () => {
     try {
@@ -202,6 +206,9 @@ function App() {
 
   useEffect(loadNeuralNetwork, [neuralNetworkType]);
 
+  if (isLandingPageVisible)
+    return <LandingPage continueToApp={continueToApp} />;
+
   return (
     <>
       <div className="panel">
@@ -211,6 +218,7 @@ function App() {
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
+          <button onClick={() => setIsLandingPageVisible(true)}>Help</button>
         </div>
 
         <PredictionInput

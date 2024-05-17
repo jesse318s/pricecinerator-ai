@@ -21,19 +21,24 @@ jest.mock("./constants/serializedNeuralNetworks", () => {
 
 describe("App", () => {
   let predictPriceButton;
+  let continueButton;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     render(<App />);
 
-    predictPriceButton = screen.getByText("Predict Price");
+    continueButton = screen.getByText("Continue");
+    fireEvent.click(continueButton);
   });
 
-  test("Predict Price button is rendered", () =>
-    expect(predictPriceButton).toBeInTheDocument());
+  test("Predict Price button is rendered after clicking the continue button", () => {
+    predictPriceButton = screen.getByText("Predict Price");
+    expect(predictPriceButton).toBeInTheDocument();
+  });
 
   test("Predict Price button functions correctly in Performance Mode", async () => {
+    predictPriceButton = screen.getByText("Predict Price");
     fireEvent.click(predictPriceButton);
 
     await waitFor(() =>
@@ -53,10 +58,11 @@ describe("App", () => {
   test(
     "Predict Price button updates Price heading correctly in Training Mode",
     async () => {
-      const trainingModeCheckbox = screen.getByText("Training Mode:");
       const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+      const trainingModeCheckbox = screen.getByText("Training Mode:");
 
       fireEvent.click(trainingModeCheckbox);
+      predictPriceButton = screen.getByText("Predict Price");
       fireEvent.click(predictPriceButton);
 
       await waitFor(

@@ -22,7 +22,7 @@ export const gameNeuralNetworkConfig = {
 
 export const gameTrainingOptions = {
   iterations: 100000, // The maximum times to iterate the training data
-  timeout: 30000, // Maximum training time in milliseconds
+  timeout: 37000, // Maximum training time in milliseconds
   learningRate: 0.9, // The learning rate, how much to change the weights at each iteration
   decayRate: 0.9, // The learning rate decay over time
   momentum: 0.05, // How much to let previous iterations influence the current one
@@ -52,7 +52,7 @@ export const bitcoinNeuralNetworkConfig = {
 
 export const bitcoinTrainingOptions = {
   iterations: 200000, // The maximum times to iterate the training data
-  timeout: 60000, // Maximum training time in milliseconds
+  timeout: 70000, // Maximum training time in milliseconds
   learningRate: 0.4, // The learning rate, how much to change the weights at each iteration
   decayRate: 0.5, // The learning rate decay over time
   momentum: 0.5, // How much to let previous iterations influence the current one
