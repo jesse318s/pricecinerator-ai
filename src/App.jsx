@@ -74,7 +74,7 @@ function App() {
       setNnStatusTxt("");
     } catch (err) {
       console.error(err);
-      setErrMsgTxt(err.message);
+      setErrMsgTxt("An error occurred while loading the neural network.");
     }
   };
 
@@ -118,7 +118,7 @@ function App() {
       return neuralNetwork;
     } catch (err) {
       console.error(err);
-      setErrMsgTxt(err.message);
+      setErrMsgTxt("An error occurred while training the neural network.");
     }
   };
 
@@ -213,7 +213,7 @@ function App() {
       setPriceOutput(price.toFixed(2));
     } catch (err) {
       console.error(err);
-      setErrMsgTxt(err.message);
+      setErrMsgTxt("An error occurred while running the neural network.");
     }
   };
 
