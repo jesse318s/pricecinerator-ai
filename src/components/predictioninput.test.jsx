@@ -76,7 +76,7 @@ describe("PredictionInput", () => {
     expect(checkboxInput.checked).toBe(true);
   });
 
-  test("predicition option radio button calls setPredictionOptions as expected when clicked", () => {
+  test("predicition option radio calls setPredictionOptions as expected when clicked", () => {
     const predictionOptionsInput = result.getByLabelText("Training Mode:");
 
     expect(predictionOptionsInput.checked).toBe(false);

@@ -47,6 +47,7 @@ function App() {
   );
   const neuralNetworkTimeout = useRef(0);
 
+  // Loads the neural network based on the selected type
   const loadNeuralNetwork = () => {
     try {
       neuralNetworkConfig.current =
@@ -79,6 +80,7 @@ function App() {
 
   const continueToApp = () => setIsLpVisible(false);
 
+  // Generates a new neural network and trains it based on the training data and options
   const trainNeuralNetwork = () => {
     try {
       const optionsKeys = Object.keys(objectGenerationOptions.current);
@@ -120,6 +122,7 @@ function App() {
     }
   };
 
+  // Ensures the year input is within neural network's range and updates state if it's adjusted
   const validateYear = () => {
     const { min, max } = neuralNetworkYearRange.current;
     const year = parseFloat(predictionObjectInput.year);
@@ -142,6 +145,16 @@ function App() {
     return validatedYear;
   };
 
+  /*
+  The runNeuralNetwork function is responsible for running the neural network to predict the price
+  based on the input.
+
+  In Performance Mode, the function uses the pre-trained neural network to predict the price.
+
+  In Training Mode, the function:
+  - Saves a newly trained neural network for use in Performance Mode
+  - Uses the newly trained neural network to predict the price
+  */
   const runNeuralNetwork = () => {
     try {
       const predictionObjectInputFormatted = {
@@ -204,6 +217,7 @@ function App() {
     }
   };
 
+  // Resets output and error state, then schedules the neural network to run after 200ms
   const predictPrice = () => {
     setErrMsgTxt("");
     setPriceOutput("");
@@ -211,9 +225,11 @@ function App() {
     neuralNetworkTimeout.current = setTimeout(runNeuralNetwork, 200);
   };
 
+  // Runs when the component mounts and whenever the neuralNetworkType changes
   useEffect(() => {
     loadNeuralNetwork();
 
+    // Clears the neural network timeout when the component unmounts
     return () => clearTimeout(neuralNetworkTimeout.current);
   }, [neuralNetworkType]);
 
@@ -231,6 +247,7 @@ function App() {
     <>
       <div className="panel">
         <div className="menu">
+          {/* Generates buttons based on the keys in the neuralNetworkTypes object */}
           {Object.keys(neuralNetworkSettings.neuralNetworkTypes).map((type) => (
             <button key={type} onClick={() => setNeuralNetworkType(type)}>
               {type.charAt(0).toUpperCase() + type.slice(1)}

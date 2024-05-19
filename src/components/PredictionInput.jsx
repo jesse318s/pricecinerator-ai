@@ -37,6 +37,7 @@ function PredictionInput({
           </div>
 
           <div className="box-row">
+            {/* Generates checkboxes for each input key in the training data that isn't "year" */}
             {Object.keys(
               trainingData[neuralNetworkType + "TrainingData"][0].input
             ).map((key) =>

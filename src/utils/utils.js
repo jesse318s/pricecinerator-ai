@@ -1,3 +1,4 @@
+// Generates additional training data for the neural network based on the initial training data
 export const generateTrainingObjects = (
   baseYear,
   basePrice,
