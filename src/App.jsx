@@ -47,28 +47,33 @@ function App() {
   );
 
   const loadNeuralNetwork = () => {
-    objectGenerationOptions.current =
-      neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
-    neuralNetworkTrainingOptions.current =
-      neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
-    neuralNetworkTrainingOptions.current.callback = () =>
-      (trainingIsIncomplete.current = false);
-    serializedNeuralNetwork.current =
-      serializedNeuralNetworks[`${neuralNetworkType}SerializedNeuralNetwork`];
-    neuralNetworkConfig.current =
-      neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
-    trainingData.current =
-      neuralNetworkTrainingData[`${neuralNetworkType}TrainingData`];
-    neuralNetworkYearRange.current =
-      neuralNetworkSettings.neuralNetworkYearRanges[neuralNetworkType];
-    priceModifier.current =
-      neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType];
-    setPredictionObjectInput({
-      year: new Date().getFullYear().toString(),
-    });
-    setPriceOutput("?");
-    setErrMsgTxt("");
-    setTrainingText("");
+    try {
+      objectGenerationOptions.current =
+        neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
+      neuralNetworkTrainingOptions.current =
+        neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
+      neuralNetworkTrainingOptions.current.callback = () =>
+        (trainingIsIncomplete.current = false);
+      serializedNeuralNetwork.current =
+        serializedNeuralNetworks[`${neuralNetworkType}SerializedNeuralNetwork`];
+      neuralNetworkConfig.current =
+        neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
+      trainingData.current =
+        neuralNetworkTrainingData[`${neuralNetworkType}TrainingData`];
+      neuralNetworkYearRange.current =
+        neuralNetworkSettings.neuralNetworkYearRanges[neuralNetworkType];
+      priceModifier.current =
+        neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType];
+      setPredictionObjectInput({
+        year: new Date().getFullYear().toString(),
+      });
+      setPriceOutput("?");
+      setErrMsgTxt("");
+      setTrainingText("");
+    } catch (err) {
+      console.error(err);
+      setErrMsgTxt(err.message);
+    }
   };
 
   const continueToApp = () => setIsLandingPageVisible(false);
@@ -119,11 +124,19 @@ function App() {
     const year = parseFloat(predictionObjectInput.year);
     const validatedYear = Math.max(min, Math.min(max, year));
 
-    if (year !== validatedYear)
+    if (year !== validatedYear) {
       setPredictionObjectInput({
         ...predictionObjectInput,
         year: validatedYear,
       });
+      setErrMsgTxt(
+        "Year must be between " +
+          neuralNetworkYearRange.current.min +
+          " and " +
+          neuralNetworkYearRange.current.max +
+          "."
+      );
+    }
 
     return validatedYear;
   };
@@ -193,15 +206,10 @@ function App() {
   };
 
   const predictPrice = () => {
-    try {
-      setErrMsgTxt("");
-      setPriceOutput(undefined);
+    setErrMsgTxt("");
+    setPriceOutput(undefined);
 
-      setTimeout(runNeuralNetwork, 200);
-    } catch (err) {
-      console.error(err);
-      setErrMsgTxt(err.message);
-    }
+    setTimeout(runNeuralNetwork, 200);
   };
 
   useEffect(loadNeuralNetwork, [neuralNetworkType]);
