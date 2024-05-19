@@ -3,13 +3,14 @@ import React, { useState, useRef, useEffect } from "react";
 import * as neuralNetworkSettings from "./constants/neuralNetworkSettings";
 import * as serializedNeuralNetworks from "./constants/serializedNeuralNetworks";
 import * as neuralNetworkTrainingData from "./constants/trainingData";
-import * as brain from "brain.js";
-import { generateTrainingObjects } from "./utils/utils";
 import LandingPage from "./components/LandingPage";
 import PredictionInput from "./components/PredictionInput";
+import * as brain from "brain.js";
+import { generateTrainingObjects } from "./utils/utils";
 
 function App() {
-  const [isLandingPageVisible, setIsLandingPageVisible] = useState(true);
+  const [errMsgTxt, setErrMsgTxt] = useState("");
+  const [isLpVisible, setIsLpVisible] = useState(true);
   const [predictionObjectInput, setPredictionObjectInput] = useState({
     year: new Date().getFullYear().toString(),
   });
@@ -17,24 +18,23 @@ function App() {
     performanceMode: true,
     trainingMode: false,
   });
-  const [priceOutput, setPriceOutput] = useState("?");
-  const [errMsgTxt, setErrMsgTxt] = useState("");
-  const [trainingText, setTrainingText] = useState("");
   const [neuralNetworkType, setNeuralNetworkType] = useState(
     neuralNetworkSettings.neuralNetworkTypes.game
+  );
+  const [priceOutput, setPriceOutput] = useState("?");
+  const [nnStatusTxt, setNnStatusTxt] = useState("");
+  const neuralNetworkConfig = useRef(
+    neuralNetworkSettings.gameNeuralNetworkConfig
+  );
+  const neuralNetworkTrainingOptions = useRef(
+    neuralNetworkSettings.gameTrainingOptions
   );
   const trainingIsIncomplete = useRef(false);
   const objectGenerationOptions = useRef(
     neuralNetworkSettings.gameObjectGenerationOptions
   );
-  const neuralNetworkTrainingOptions = useRef(
-    neuralNetworkSettings.gameTrainingOptions
-  );
   const serializedNeuralNetwork = useRef(
     serializedNeuralNetworks.gameSerializedNeuralNetwork
-  );
-  const neuralNetworkConfig = useRef(
-    neuralNetworkSettings.gameNeuralNetworkConfig
   );
   const trainingData = useRef(
     neuralNetworkTrainingData.gameTrainingData.slice()
@@ -45,19 +45,20 @@ function App() {
   const priceModifier = useRef(
     neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType]
   );
+  const neuralNetworkTimeout = useRef(0);
 
   const loadNeuralNetwork = () => {
     try {
-      objectGenerationOptions.current =
-        neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
+      neuralNetworkConfig.current =
+        neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
       neuralNetworkTrainingOptions.current =
         neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
       neuralNetworkTrainingOptions.current.callback = () =>
         (trainingIsIncomplete.current = false);
+      objectGenerationOptions.current =
+        neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
       serializedNeuralNetwork.current =
         serializedNeuralNetworks[`${neuralNetworkType}SerializedNeuralNetwork`];
-      neuralNetworkConfig.current =
-        neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
       trainingData.current =
         neuralNetworkTrainingData[`${neuralNetworkType}TrainingData`];
       neuralNetworkYearRange.current =
@@ -67,16 +68,16 @@ function App() {
       setPredictionObjectInput({
         year: new Date().getFullYear().toString(),
       });
-      setPriceOutput("?");
       setErrMsgTxt("");
-      setTrainingText("");
+      setPriceOutput("?");
+      setNnStatusTxt("");
     } catch (err) {
       console.error(err);
       setErrMsgTxt(err.message);
     }
   };
 
-  const continueToApp = () => setIsLandingPageVisible(false);
+  const continueToApp = () => setIsLpVisible(false);
 
   const trainNeuralNetwork = () => {
     try {
@@ -129,7 +130,7 @@ function App() {
         ...predictionObjectInput,
         year: validatedYear,
       });
-      setErrMsgTxt(
+      setNnStatusTxt(
         "Year must be between " +
           neuralNetworkYearRange.current.min +
           " and " +
@@ -154,8 +155,6 @@ function App() {
             : 0;
       }
 
-      setTrainingText("");
-
       if (predictionOptions.performanceMode) {
         const price =
           priceModifier.current *
@@ -172,8 +171,8 @@ function App() {
 
       const neuralNetwork = trainNeuralNetwork(year);
 
-      setTrainingText(
-        "Your device may not be performant enough for Training Mode. Your training wasn't saved."
+      setNnStatusTxt(
+        "Your device may not be performant enough for Training Mode. Your training wasn't used."
       );
 
       if (trainingIsIncomplete.current) {
@@ -192,7 +191,7 @@ function App() {
 
       const newSerializedNeuralNetwork = neuralNetwork.toFunction().toString();
 
-      setTrainingText(newSerializedNeuralNetwork);
+      setNnStatusTxt(newSerializedNeuralNetwork);
 
       const price =
         priceModifier.current *
@@ -207,15 +206,26 @@ function App() {
 
   const predictPrice = () => {
     setErrMsgTxt("");
-    setPriceOutput(undefined);
-
-    setTimeout(runNeuralNetwork, 200);
+    setPriceOutput("");
+    setNnStatusTxt("");
+    neuralNetworkTimeout.current = setTimeout(runNeuralNetwork, 200);
   };
 
-  useEffect(loadNeuralNetwork, [neuralNetworkType]);
+  useEffect(() => {
+    loadNeuralNetwork();
 
-  if (isLandingPageVisible)
-    return <LandingPage continueToApp={continueToApp} />;
+    return () => clearTimeout(neuralNetworkTimeout.current);
+  }, [neuralNetworkType]);
+
+  if (errMsgTxt)
+    return (
+      <div className="panel">
+        <div className="sized-box">{errMsgTxt}</div>
+        <button onClick={() => window.location.reload(true)}>Refresh</button>
+      </div>
+    );
+
+  if (isLpVisible) return <LandingPage continueToApp={continueToApp} />;
 
   return (
     <>
@@ -226,7 +236,7 @@ function App() {
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
-          <button onClick={() => setIsLandingPageVisible(true)}>Help</button>
+          <button onClick={() => setIsLpVisible(true)}>Help</button>
         </div>
 
         <PredictionInput
@@ -248,20 +258,11 @@ function App() {
           </>
         )}
 
-        {errMsgTxt ? (
+        {nnStatusTxt ? (
           <>
             <div className="sized-box">
-              <h3>Error:</h3>
-              {errMsgTxt}
-            </div>
-          </>
-        ) : null}
-
-        {trainingText ? (
-          <>
-            <div className="sized-box">
-              <h3>Training Data:</h3>
-              {trainingText}
+              <h3>Neural Network Status:</h3>
+              {nnStatusTxt}
             </div>
           </>
         ) : null}

@@ -18,7 +18,7 @@ describe("LandingPage", () => {
   test("Continue button is rendered", () =>
     expect(continueButton).toBeInTheDocument());
 
-  test("Continue button calls  correctly when click", () => {
+  test("Continue button calls continueToApp correctly when clicked", () => {
     fireEvent.click(continueButton);
     expect(continueToAppMock).toHaveBeenCalled();
   });
