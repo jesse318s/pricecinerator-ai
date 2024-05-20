@@ -1,12 +1,9 @@
 import "./App.css";
 import React, { useState, useRef, useEffect } from "react";
 import * as neuralNetworkSettings from "./constants/neuralNetworkSettings";
-import * as serializedNeuralNetworks from "./constants/serializedNeuralNetworks";
-import * as neuralNetworkTrainingData from "./constants/trainingData";
+import { useNeuralNetwork } from "./hooks/useNeuralNetwork";
 import LandingPage from "./components/LandingPage";
 import PredictionInput from "./components/PredictionInput";
-import * as brain from "brain.js";
-import { generateTrainingObjects } from "./utils/utils";
 
 function App() {
   const [errMsgTxt, setErrMsgTxt] = useState("");
@@ -23,104 +20,22 @@ function App() {
   );
   const [priceOutput, setPriceOutput] = useState("?");
   const [nnStatusTxt, setNnStatusTxt] = useState("");
-  const neuralNetworkConfig = useRef(
-    neuralNetworkSettings.gameNeuralNetworkConfig
-  );
-  const neuralNetworkTrainingOptions = useRef(
-    neuralNetworkSettings.gameTrainingOptions
-  );
-  const trainingIsIncomplete = useRef(false);
-  const objectGenerationOptions = useRef(
-    neuralNetworkSettings.gameObjectGenerationOptions
-  );
-  const serializedNeuralNetwork = useRef(
-    serializedNeuralNetworks.gameSerializedNeuralNetwork
-  );
-  const trainingData = useRef(
-    neuralNetworkTrainingData.gameTrainingData.slice()
-  );
-  const neuralNetworkYearRange = useRef(
-    neuralNetworkSettings.neuralNetworkYearRanges[neuralNetworkType]
-  );
-  const priceModifier = useRef(
-    neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType]
-  );
   const neuralNetworkTimeout = useRef(0);
-
-  // Loads the neural network based on the selected type
-  const loadNeuralNetwork = () => {
-    try {
-      neuralNetworkConfig.current =
-        neuralNetworkSettings[`${neuralNetworkType}NeuralNetworkConfig`];
-      neuralNetworkTrainingOptions.current =
-        neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
-      neuralNetworkTrainingOptions.current.callback = () =>
-        (trainingIsIncomplete.current = false);
-      objectGenerationOptions.current =
-        neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
-      serializedNeuralNetwork.current =
-        serializedNeuralNetworks[`${neuralNetworkType}SerializedNeuralNetwork`];
-      trainingData.current =
-        neuralNetworkTrainingData[`${neuralNetworkType}TrainingData`];
-      neuralNetworkYearRange.current =
-        neuralNetworkSettings.neuralNetworkYearRanges[neuralNetworkType];
-      priceModifier.current =
-        neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType];
-      setPredictionObjectInput({
-        year: new Date().getFullYear().toString(),
-      });
-      setErrMsgTxt("");
-      setPriceOutput("?");
-      setNnStatusTxt("");
-    } catch (err) {
-      console.error(err);
-      setErrMsgTxt("An error occurred while loading the neural network.");
-    }
-  };
+  const {
+    trainingIsIncomplete,
+    serializedNeuralNetwork,
+    neuralNetworkYearRange,
+    priceModifier,
+    trainNeuralNetwork,
+  } = useNeuralNetwork(
+    setErrMsgTxt,
+    neuralNetworkType,
+    setPredictionObjectInput,
+    setPriceOutput,
+    setNnStatusTxt
+  );
 
   const continueToApp = () => setIsLpVisible(false);
-
-  // Generates a new neural network and trains it based on the training data and options
-  const trainNeuralNetwork = () => {
-    try {
-      const optionsKeys = Object.keys(objectGenerationOptions.current);
-      const neuralNetwork = new brain.NeuralNetwork(
-        neuralNetworkConfig.current
-      );
-      const trainingDataInitialLength = trainingData.current.length;
-
-      for (let i = 0; i < optionsKeys.length / 2; i++) {
-        if (!optionsKeys) break;
-
-        const newTrainingData = generateTrainingObjects(
-          objectGenerationOptions.current[optionsKeys[i * 2]],
-          objectGenerationOptions.current[optionsKeys[i * 2 + 1]],
-          trainingData.current,
-          priceModifier.current
-        );
-
-        trainingData.current.splice(
-          trainingData.current.length,
-          0,
-          ...newTrainingData
-        );
-      }
-
-      neuralNetwork.train(
-        trainingData.current,
-        neuralNetworkTrainingOptions.current
-      );
-
-      console.log(trainingData.current);
-
-      trainingData.current.length = trainingDataInitialLength;
-
-      return neuralNetwork;
-    } catch (err) {
-      console.error(err);
-      setErrMsgTxt("An error occurred while training the neural network.");
-    }
-  };
 
   // Ensures the year input is within neural network's range and updates state if it's adjusted
   const validateYear = () => {
@@ -222,16 +137,14 @@ function App() {
     setErrMsgTxt("");
     setPriceOutput("");
     setNnStatusTxt("");
+    clearTimeout(neuralNetworkTimeout.current);
     neuralNetworkTimeout.current = setTimeout(runNeuralNetwork, 200);
   };
 
-  // Runs when the component mounts and whenever the neuralNetworkType changes
   useEffect(() => {
-    loadNeuralNetwork();
-
     // Clears the neural network timeout when the component unmounts
-    return () => clearTimeout(neuralNetworkTimeout.current);
-  }, [neuralNetworkType]);
+    return clearTimeout(neuralNetworkTimeout.current);
+  }, []);
 
   if (errMsgTxt)
     return (
