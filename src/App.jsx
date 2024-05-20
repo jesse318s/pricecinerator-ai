@@ -2,6 +2,7 @@ import "./App.css";
 import React, { useState, useRef, useEffect } from "react";
 import * as neuralNetworkSettings from "./constants/neuralNetworkSettings";
 import { useNeuralNetwork } from "./hooks/useNeuralNetwork";
+import ErrorPanel from "./components/ErrorPanel";
 import LandingPage from "./components/LandingPage";
 import PredictionInput from "./components/PredictionInput";
 
@@ -48,70 +49,47 @@ function App() {
         ...predictionObjectInput,
         year: validatedYear,
       });
-      setNnStatusTxt(
-        "Year must be between " +
-          neuralNetworkYearRange.current.min +
-          " and " +
-          neuralNetworkYearRange.current.max +
-          "."
-      );
+      setNnStatusTxt(`Year must be between ${min} and ${max}.`);
     }
 
     return validatedYear;
   };
 
-  /*
-  The runNeuralNetwork function is responsible for running the neural network to predict the price
-  based on the input.
-
-  In Performance Mode, the function uses the pre-trained neural network to predict the price.
-
-  In Training Mode, the function:
-  - Saves a newly trained neural network for use in Performance Mode
-  - Uses the newly trained neural network to predict the price
-  */
-  const runNeuralNetwork = () => {
+  // In Performance Mode, the function uses the pre-trained neural network to predict the price
+  const runPerformanceMode = (predictionObjectInputFormatted) => {
     try {
-      const predictionObjectInputFormatted = {
-        year: validateYear() / 10000,
-      };
+      const price =
+        priceModifier.current *
+        serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
+          "price"
+        ];
 
-      for (const key in predictionObjectInput) {
-        if (key !== "year")
-          predictionObjectInputFormatted[key] = predictionObjectInput[key]
-            ? 1
-            : 0;
-      }
+      setPriceOutput(price.toFixed(2));
+    } catch (err) {
+      console.error(err);
+      setErrMsgTxt(
+        "An error occurred while running the neural network in Performance Mode."
+      );
+    }
+  };
 
-      if (predictionOptions.performanceMode) {
-        const price =
-          priceModifier.current *
-          serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
-            "price"
-          ];
-
-        setPriceOutput(price.toFixed(2));
-
-        return;
-      }
-
+  /* In Training Mode, the function:
+  - Saves a newly trained neural network for use in Performance Mode
+  - Uses the newly trained neural network to predict the price */
+  const runTrainingMode = (predictionObjectInputFormatted) => {
+    try {
       trainingIsIncomplete.current = true;
 
-      const neuralNetwork = trainNeuralNetwork(year);
+      const neuralNetwork = trainNeuralNetwork(
+        predictionObjectInputFormatted.year
+      );
 
       setNnStatusTxt(
         "Your device may not be performant enough for Training Mode. Your training wasn't used."
       );
 
       if (trainingIsIncomplete.current) {
-        const price =
-          priceModifier.current *
-          serializedNeuralNetwork.current.run(predictionObjectInputFormatted)[
-            "price"
-          ];
-
-        setPriceOutput(price.toFixed(2));
-
+        runPerformanceMode(predictionObjectInputFormatted);
         return;
       }
 
@@ -128,17 +106,43 @@ function App() {
       setPriceOutput(price.toFixed(2));
     } catch (err) {
       console.error(err);
-      setErrMsgTxt("An error occurred while running the neural network.");
+      setErrMsgTxt(
+        "An error occurred while running the neural network in Training Mode."
+      );
     }
   };
 
-  // Resets output and error state, then schedules the neural network to run after 200ms
+  // Runs the neural network to predict the price based on the input
+  const runNeuralNetwork = () => {
+    const predictionObjectInputFormatted = {
+      year: validateYear() / neuralNetworkSettings.yearNormalizationFactor,
+    };
+
+    for (const key in predictionObjectInput) {
+      if (key !== "year")
+        predictionObjectInputFormatted[key] = predictionObjectInput[key]
+          ? 1
+          : 0;
+    }
+
+    if (predictionOptions.performanceMode) {
+      runPerformanceMode(predictionObjectInputFormatted);
+      return;
+    }
+
+    runTrainingMode(predictionObjectInputFormatted);
+  };
+
+  // Resets output and error state, then schedules the neural network to run after a delay
   const predictPrice = () => {
     setErrMsgTxt("");
     setPriceOutput("");
     setNnStatusTxt("");
     clearTimeout(neuralNetworkTimeout.current);
-    neuralNetworkTimeout.current = setTimeout(runNeuralNetwork, 200);
+    neuralNetworkTimeout.current = setTimeout(
+      runNeuralNetwork,
+      neuralNetworkSettings.neuralNetworkTimeoutDelay
+    );
   };
 
   useEffect(() => {
@@ -146,13 +150,7 @@ function App() {
     return clearTimeout(neuralNetworkTimeout.current);
   }, []);
 
-  if (errMsgTxt)
-    return (
-      <div className="panel">
-        <div className="sized-box">{errMsgTxt}</div>
-        <button onClick={() => window.location.reload(true)}>Refresh</button>
-      </div>
-    );
+  if (errMsgTxt) return <ErrorPanel errMsgTxt={errMsgTxt} />;
 
   if (isLpVisible) return <LandingPage continueToApp={continueToApp} />;
 

@@ -58,7 +58,6 @@ describe("App", () => {
   test(
     "Predict Price button updates Price heading correctly in Training Mode",
     async () => {
-      const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
       const trainingModeCheckbox = screen.getByText("Training Mode:");
 
       fireEvent.click(trainingModeCheckbox);
@@ -75,8 +74,6 @@ describe("App", () => {
         },
         { timeout: gameSerializedNeuralNetwork.expectedTestTrainingTimeout }
       );
-
-      alertSpy.mockRestore();
     },
     gameSerializedNeuralNetwork.expectedTestTrainingTimeout
   );

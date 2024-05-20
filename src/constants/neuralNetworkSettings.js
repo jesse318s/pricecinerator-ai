@@ -1,3 +1,7 @@
+export const neuralNetworkTimeoutDelay = 200; // Delay in ms before running the neural network
+
+export const yearNormalizationFactor = 10000; // The factor to divide the year by to normalize it
+
 export const neuralNetworkTypes = {
   game: "game",
   bitcoin: "bitcoin",
