@@ -55,7 +55,7 @@ function App() {
     return validatedYear;
   };
 
-  // In Performance Mode, the function uses the pre-trained neural network to predict the price
+  // Uses the pre-trained neural network to predict the price
   const runPerformanceMode = (predictionObjectInputFormatted) => {
     try {
       const price =
@@ -73,9 +73,12 @@ function App() {
     }
   };
 
-  /* In Training Mode, the function:
-  - Saves a newly trained neural network for use in Performance Mode
-  - Uses the newly trained neural network to predict the price */
+  /* 
+    - Trains a new neural network based on the input year
+    - Saves the newly trained neural network for use in Performance Mode
+    - Uses the newly trained neural network to predict the price
+    - (Runs the neural network in Performance Mode instead, if the training doesn't complete)
+  */
   const runTrainingMode = (predictionObjectInputFormatted) => {
     try {
       trainingIsIncomplete.current = true;

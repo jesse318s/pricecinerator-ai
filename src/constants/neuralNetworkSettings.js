@@ -9,7 +9,7 @@ export const neuralNetworkTypes = {
 
 export const neuralNetworkYearRanges = {
   game: { min: 1977, max: 2999 },
-  bitcoin: { min: 2025, max: 2199 },
+  bitcoin: { min: 2024, max: 2199 },
 }; // The min and max year allowed for user input
 
 export const neuralNetworkPriceModifiers = {
