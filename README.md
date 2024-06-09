@@ -1,6 +1,6 @@
 # pricecinerator-ai
 
-This app is for predicting prices. It was created using React.js and the Brain.js library. It was developed in Visual Studio Code.
+This app is for predicting prices and developing neural networks for predicting prices. It was created using React.js and the Brain.js library. It was developed in Visual Studio Code.
 
 ## Adding a New Neural Network (Development)
 

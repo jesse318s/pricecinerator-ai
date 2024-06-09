@@ -6,6 +6,8 @@ import ErrorPanel from "./components/ErrorPanel";
 import LandingPage from "./components/LandingPage";
 import PredictionInput from "./components/PredictionInput";
 
+export const yearNormalizationFactor = 0.0001;
+
 function App() {
   const [errMsgTxt, setErrMsgTxt] = useState("");
   const [isLpVisible, setIsLpVisible] = useState(true);
@@ -118,7 +120,7 @@ function App() {
   // Runs the neural network to predict the price based on the input
   const runNeuralNetwork = () => {
     const predictionObjectInputFormatted = {
-      year: validateYear() / neuralNetworkSettings.yearNormalizationFactor,
+      year: validateYear() * yearNormalizationFactor,
     };
 
     for (const key in predictionObjectInput) {

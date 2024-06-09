@@ -21,14 +21,14 @@ jest.mock("./constants/serializedNeuralNetworks", () => {
 
 describe("App", () => {
   let predictPriceButton;
-  let continueButton;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     render(<App />);
 
-    continueButton = screen.getByText("Continue");
+    const continueButton = screen.getByText("Continue");
+
     fireEvent.click(continueButton);
   });
 
