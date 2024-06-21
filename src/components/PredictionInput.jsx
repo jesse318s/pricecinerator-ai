@@ -32,6 +32,9 @@ function PredictionInput({
                     year: e.target.value,
                   })
                 }
+                onKeyDown={(e) =>
+                  e.key === "Enter" ? e.preventDefault() : undefined
+                }
               />
             </label>
           </div>

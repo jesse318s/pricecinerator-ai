@@ -53,16 +53,16 @@ export const bitcoinNeuralNetworkConfig = {
 };
 
 export const bitcoinTrainingOptions = {
-  iterations: 200000, // The maximum times to iterate the training data
-  timeout: 70000, // Maximum training time in milliseconds
+  iterations: 150000, // The maximum times to iterate the training data
+  timeout: 56000, // Maximum training time in milliseconds
   learningRate: 0.4, // The learning rate, how much to change the weights at each iteration
-  decayRate: 0.5, // The learning rate decay over time
-  momentum: 0.5, // How much to let previous iterations influence the current one
+  decayRate: 0.1, // The learning rate decay over time
+  momentum: 0.9, // How much to let previous iterations influence the current one
   errorThresh: 0.00001, // Error threshold to reach before completing the training
   minimize: true, // Whether to minimize or maximize the error function
   log: true, // Whether to console.log() progress periodically
-  logPeriod: 20000, // How many iterations between logging
-  callbackPeriod: 200000, // How many iterations between calling the callback
+  logPeriod: 15000, // How many iterations between logging
+  callbackPeriod: 150000, // How many iterations between calling the callback
   callback: null, // Function to call at each callbackPeriod
 };
 
@@ -72,7 +72,7 @@ export const bitcoinObjectGenerationOptions = {
   medBaseYear: 2019, // The medium year for the generated objects
   medBasePrice: 4024, // The price for medBaseYear
   medHighBaseYear: 2024, // The medium-high year for the generated objects
-  medHighBasePrice: 75000, // The price for medhighBaseYear
+  medHighBasePrice: 73000, // The price for medhighBaseYear
   highBaseYear: 2034, // The latest year for the generated objects
-  highBasePrice: 400000, // The price for highBaseYear
+  highBasePrice: 219000, // The price for highBaseYear
 };
