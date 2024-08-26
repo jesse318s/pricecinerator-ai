@@ -69,18 +69,15 @@ export function useNeuralNetwork(
   // Generates a new neural network and trains it based on the training data and options
   const trainNeuralNetwork = () => {
     try {
-      const optionsKeys = Object.keys(objectGenerationOptions.current);
       const neuralNetwork = new brain.NeuralNetwork(
         neuralNetworkConfig.current
       );
       const trainingDataInitialLength = trainingData.current.length;
 
-      for (let i = 0; i < optionsKeys.length / 2; i++) {
-        if (!optionsKeys) break;
-
+      for (const [key, value] of objectGenerationOptions.current) {
         const newTrainingData = generateTrainingObjects(
-          objectGenerationOptions.current[optionsKeys[i * 2]],
-          objectGenerationOptions.current[optionsKeys[i * 2 + 1]],
+          key,
+          value,
           trainingData.current,
           priceModifier.current
         );

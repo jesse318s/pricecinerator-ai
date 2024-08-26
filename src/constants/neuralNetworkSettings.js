@@ -36,14 +36,11 @@ export const gameTrainingOptions = {
   callback: null, // Function to call at each callbackPeriod
 };
 
-export const gameObjectGenerationOptions = {
-  lowBaseYear: 1977, // The earliest year for the generated objects
-  lowBasePrice: 39, // The price for lowBaseYear
-  medBaseYear: 2000, // The middle year for the generated objects
-  medBasePrice: 49, // The price for medBaseYear
-  highBaseYear: 2030, // The latest year for the generated objects
-  highBasePrice: 69, // The price for highBaseYear
-};
+export const gameObjectGenerationOptions = new Map([
+  [1977, 39], // The earliest year and price for the generated objects
+  [2000, 49], // The middle year and price for the generated objects
+  [2030, 69], // The latest year and price for the generated objects
+]);
 
 export const bitcoinNeuralNetworkConfig = {
   hiddenLayers: [2], // Number of neurons in each hidden layer
@@ -66,13 +63,9 @@ export const bitcoinTrainingOptions = {
   callback: null, // Function to call at each callbackPeriod
 };
 
-export const bitcoinObjectGenerationOptions = {
-  lowBaseYear: 2015, // The earliest year for the generated objects
-  lowBasePrice: 320, // The price for lowBaseYear
-  medBaseYear: 2019, // The medium year for the generated objects
-  medBasePrice: 4024, // The price for medBaseYear
-  medHighBaseYear: 2024, // The medium-high year for the generated objects
-  medHighBasePrice: 73000, // The price for medhighBaseYear
-  highBaseYear: 2034, // The latest year for the generated objects
-  highBasePrice: 219000, // The price for highBaseYear
-};
+export const bitcoinObjectGenerationOptions = new Map([
+  [2015, 320], // The earliest year and price for the generated objects
+  [2019, 4024], // The medium year and price for the generated objects
+  [2024, 73000], // The medium-high year and price for the generated objects
+  [2034, 219000], // The latest year and price for the generated objects
+]);
