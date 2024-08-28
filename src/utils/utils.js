@@ -1,11 +1,20 @@
 import { yearNormalizationFactor } from "../App";
 
+// Filters out the year from the random training data
+const filterRandomData = (randomTrainingData) => {
+  return Object.keys(randomTrainingData).reduce((acc, key) => {
+    if (key !== "year") acc[key] = randomTrainingData[key];
+
+    return acc;
+  }, {});
+};
+
 // Generates additional training data for the neural network based on the initial training data
 export const generateTrainingObjects = (
   baseYear,
   basePrice,
   trainingData,
-  priceModifer
+  priceModifier
 ) => {
   const randomYearRange = 10;
   const priceFluctuationFactor = 0.25;
@@ -18,16 +27,7 @@ export const generateTrainingObjects = (
     const randomPrice = basePrice * (1 + priceFluctuation);
     const randomIndex = Math.floor(Math.random() * trainingData.length);
     const randomTrainingData = trainingData[randomIndex].input;
-
-    const filteredRandomData = Object.keys(randomTrainingData).reduce(
-      (acc, key) => {
-        if (key !== "year") acc[key] = randomTrainingData[key];
-
-        return acc;
-      },
-      {}
-    );
-
+    const filteredRandomData = filterRandomData(randomTrainingData);
     const input = {
       year: randomYear * yearNormalizationFactor,
       ...filteredRandomData,
@@ -36,7 +36,7 @@ export const generateTrainingObjects = (
     newTrainingData.push({
       input,
       output: {
-        price: randomPrice / priceModifer,
+        price: randomPrice / priceModifier,
       },
     });
   }
