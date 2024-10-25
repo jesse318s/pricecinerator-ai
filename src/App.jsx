@@ -95,6 +95,7 @@ function App() {
 
       if (trainingIsIncomplete.current) {
         runPerformanceMode(predictionObjectInputFormatted);
+
         return;
       }
 
@@ -132,6 +133,7 @@ function App() {
 
     if (predictionOptions.performanceMode) {
       runPerformanceMode(predictionObjectInputFormatted);
+
       return;
     }
 
