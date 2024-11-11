@@ -79,7 +79,7 @@ function App() {
     - Trains a new neural network based on the input year
     - Saves the newly trained neural network for use in Performance Mode
     - Uses the newly trained neural network to predict the price
-    - (Runs the neural network in Performance Mode instead, if the training doesn't complete)
+    - (If the training doesn't complete, runs the neural network in Performance Mode instead)
   */
   const runTrainingMode = (predictionObjectInputFormatted) => {
     try {
