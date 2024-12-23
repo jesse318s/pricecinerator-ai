@@ -75,12 +75,17 @@ function App() {
     }
   };
 
-  /* 
-    - Trains a new neural network based on the input year
-    - Saves the newly trained neural network for use in Performance Mode
-    - Uses the newly trained neural network to predict the price
-    - (If the training doesn't complete, runs the neural network in Performance Mode instead)
-  */
+  /**
+   * @description
+   * This function performs the following operations:
+   * 1. Trains a new neural network based on the input year
+   * 2. Saves the newly trained neural network for use in Performance Mode
+   * 3. Uses the newly trained neural network to predict the price
+   * (If the training doesn't complete, runs the neural network in Performance Mode instead)
+   *
+   * @param {Object} predictionObjectInputFormatted - The formatted input object
+   * @returns {void} Updates the state with either the new price prediction or an error
+   */
   /* eslint-disable react-compiler/react-compiler */
   const runTrainingMode = (predictionObjectInputFormatted) => {
     try {
