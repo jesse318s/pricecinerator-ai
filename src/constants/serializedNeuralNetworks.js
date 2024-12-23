@@ -1,5 +1,6 @@
 export const gameSerializedNeuralNetwork = {
   run: function anonymous(input) {
+    // eslint-disable-next-line no-param-reassign
     input = new Float32Array([
       input["year"],
       input["genre_Action"],
@@ -456,6 +457,7 @@ export const gameSerializedNeuralNetwork = {
 
 export const bitcoinSerializedNeuralNetwork = {
   run: function anonymous(input) {
+    // eslint-disable-next-line no-param-reassign
     input = new Float32Array([input["year"]]);
     return {
       price:

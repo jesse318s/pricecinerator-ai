@@ -81,6 +81,7 @@ function App() {
     - Uses the newly trained neural network to predict the price
     - (If the training doesn't complete, runs the neural network in Performance Mode instead)
   */
+  /* eslint-disable react-compiler/react-compiler */
   const runTrainingMode = (predictionObjectInputFormatted) => {
     try {
       trainingIsIncomplete.current = true;
@@ -117,6 +118,7 @@ function App() {
       );
     }
   };
+  /* eslint-enable react-compiler/react-compiler */
 
   // Runs the neural network to predict the price based on the input
   const runNeuralNetwork = () => {
