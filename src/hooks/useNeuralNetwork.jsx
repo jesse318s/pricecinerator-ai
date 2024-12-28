@@ -103,7 +103,13 @@ export function useNeuralNetwork(
   };
 
   // Runs when the component mounts and whenever the neuralNetworkType changes
-  useEffect(loadNeuralNetwork, [neuralNetworkType]);
+  useEffect(loadNeuralNetwork, [
+    neuralNetworkType,
+    setErrMsgTxt,
+    setPredictionObjectInput,
+    setPriceOutput,
+    setNnStatusTxt,
+  ]);
 
   return {
     trainingIsIncomplete,
