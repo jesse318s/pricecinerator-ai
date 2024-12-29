@@ -18,7 +18,7 @@ export function useNeuralNetwork(
   const neuralNetworkTrainingOptions = useRef(
     neuralNetworkSettings.gameTrainingOptions
   );
-  const trainingIsIncomplete = useRef(false);
+  const trainingStatusRef = useRef(false);
   const objectGenerationOptions = useRef(
     neuralNetworkSettings.gameObjectGenerationOptions
   );
@@ -35,6 +35,8 @@ export function useNeuralNetwork(
     neuralNetworkSettings.neuralNetworkPriceModifiers[neuralNetworkType]
   );
 
+  const updateTrainingStatus = (status) => (trainingStatusRef.current = status);
+
   // Loads the neural network based on the selected type
   const loadNeuralNetwork = () => {
     try {
@@ -43,7 +45,7 @@ export function useNeuralNetwork(
       neuralNetworkTrainingOptions.current =
         neuralNetworkSettings[`${neuralNetworkType}TrainingOptions`];
       neuralNetworkTrainingOptions.current.callback = () =>
-        (trainingIsIncomplete.current = false);
+        (trainingStatusRef.current = false);
       objectGenerationOptions.current =
         neuralNetworkSettings[`${neuralNetworkType}ObjectGenerationOptions`];
       serializedNeuralNetwork.current =
@@ -112,7 +114,8 @@ export function useNeuralNetwork(
   ]);
 
   return {
-    trainingIsIncomplete,
+    trainingStatusRef,
+    updateTrainingStatus,
     serializedNeuralNetwork,
     neuralNetworkYearRange,
     priceModifier,

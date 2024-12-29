@@ -25,7 +25,8 @@ function App() {
   const [nnStatusTxt, setNnStatusTxt] = useState("");
   const neuralNetworkTimeout = useRef(0);
   const {
-    trainingIsIncomplete,
+    trainingStatusRef,
+    updateTrainingStatus,
     serializedNeuralNetwork,
     neuralNetworkYearRange,
     priceModifier,
@@ -38,7 +39,13 @@ function App() {
     setNnStatusTxt
   );
 
-  const continueToApp = () => setIsLpVisible(false);
+  const continueToApp = () => {
+    setPredictionOptions({
+      performanceMode: true,
+      trainingMode: false,
+    });
+    setIsLpVisible(false);
+  };
 
   // Ensures the year input is within neural network's range and updates state if it's adjusted
   const validateYear = () => {
@@ -78,18 +85,17 @@ function App() {
   /**
    * @description
    * This function performs the following operations:
-   * 1. Trains a new neural network based on the input year
-   * 2. Saves the newly trained neural network for use in Performance Mode
+   * 1. Trains a new neural network
+   * 2. Displays the newly trained and serialized neural network
    * 3. Uses the newly trained neural network to predict the price
    * (If the training doesn't complete, runs the neural network in Performance Mode instead)
    *
    * @param {Object} predictionObjectInputFormatted - The formatted input object
    * @returns {void} Updates the state with either the new price prediction or an error
    */
-  /* eslint-disable react-compiler/react-compiler */
   const runTrainingMode = (predictionObjectInputFormatted) => {
     try {
-      trainingIsIncomplete.current = true;
+      updateTrainingStatus(true);
 
       const neuralNetwork = trainNeuralNetwork(
         predictionObjectInputFormatted.year
@@ -99,13 +105,11 @@ function App() {
         "Your device may not be performant enough for Training Mode. Your training wasn't used."
       );
 
-      if (trainingIsIncomplete.current) {
+      if (trainingStatusRef.current) {
         runPerformanceMode(predictionObjectInputFormatted);
 
         return;
       }
-
-      serializedNeuralNetwork.current.run = neuralNetwork.toFunction();
 
       const newSerializedNeuralNetwork = neuralNetwork.toFunction().toString();
 
@@ -123,7 +127,6 @@ function App() {
       );
     }
   };
-  /* eslint-enable react-compiler/react-compiler */
 
   // Runs the neural network to predict the price based on the input
   const runNeuralNetwork = () => {

@@ -22,8 +22,7 @@ function LandingPage({ continueToApp }) {
       </ol>
 
       <p className="box">
-        You can also use Training Mode to train a new neural network version for
-        use in Performance Mode. Note: this will be lost on refresh.
+        You can also use Training Mode to train and run a new neural network.
       </p>
 
       <button onClick={continueToApp}>Continue</button>
