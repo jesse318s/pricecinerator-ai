@@ -1,9 +1,43 @@
 import { yearNormalizationFactor } from "../App";
 
-// Filters out the year from the random training data
-const filterRandomData = (randomTrainingData) => {
+// Validates a property value of a random training data object
+const validateProperty = (key, val) => {
+  if (val === null)
+    throw new Error('Value for key "' + key + '" cannot be null.');
+
+  if (val === undefined)
+    throw new Error('Value for key "' + key + '" cannot be undefined.');
+
+  if (typeof val !== "number")
+    throw new Error('Value for key "' + key + '" must be a number.');
+
+  if (isNaN(val))
+    throw new Error('`Value for key "' + key + '" cannot be NaN.');
+
+  if (!isFinite(val))
+    throw new Error(
+      'Value for key "' + key + '" cannot be Infinity or -Infinity.'
+    );
+
+  if (val < 0 || val > 1)
+    throw new Error(
+      'Value for key "' + key + '" must be between 0 and 1 (normalized).'
+    );
+};
+
+/**
+ * @description Filters the random training data object to remove the year property
+ *
+ * @param {Object} randomTrainingData - Data to filter
+ * @returns {Object} Filtered data object
+ */
+const filterRandomTrainingData = (randomTrainingData) => {
   return Object.keys(randomTrainingData).reduce((acc, key) => {
-    if (key !== "year") acc[key] = randomTrainingData[key];
+    const val = randomTrainingData[key];
+
+    validateProperty(key, val);
+
+    if (key !== "year") acc[key] = val;
 
     return acc;
   }, {});
@@ -27,7 +61,7 @@ export const generateTrainingObjects = (
     const randomPrice = basePrice * (1 + priceFluctuation);
     const randomIndex = Math.floor(Math.random() * trainingData.length);
     const randomTrainingData = trainingData[randomIndex].input;
-    const filteredRandomData = filterRandomData(randomTrainingData);
+    const filteredRandomData = filterRandomTrainingData(randomTrainingData);
     const input = {
       year: randomYear * yearNormalizationFactor,
       ...filteredRandomData,

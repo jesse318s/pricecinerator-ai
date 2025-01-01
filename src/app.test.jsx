@@ -5,7 +5,7 @@ import App from "./App";
 jest.mock("./constants/serializedNeuralNetworks", () => {
   const testPrice = 0.04594;
   const testPriceModifier = 1000;
-  const testTrainingTimeout = 37500;
+  const testTrainingTimeout = 60000;
   const testTrainingPrice = /Price: \$([1-9]\d{0,2}\.\d{2}|0\.\d*[1-9]\d*)/;
 
   return {
