@@ -1,3 +1,6 @@
+//----------------------
+// Global Settings
+//----------------------
 export const neuralNetworkTimeoutDelay = 200; // Delay in ms before running the neural network
 
 export const neuralNetworkTypes = {
@@ -15,6 +18,9 @@ export const neuralNetworkPriceModifiers = {
   bitcoin: 10000000,
 }; // Multiplier for the price prediction output
 
+//----------------------
+// Game Neural Network Settings
+//----------------------
 export const gameNeuralNetworkConfig = {
   hiddenLayers: [5, 5], // Number of neurons in each hidden layer
   inputSize: 10, // Number of input neurons (features)
@@ -42,6 +48,9 @@ export const gameObjectGenerationOptions = new Map([
   [2030, 69], // The latest year and price for the generated objects
 ]);
 
+//----------------------
+// Bitcoin Neural Network Settings
+//----------------------
 export const bitcoinNeuralNetworkConfig = {
   hiddenLayers: [2], // Number of neurons in each hidden layer
   inputSize: 1, // Number of input neurons (features)
