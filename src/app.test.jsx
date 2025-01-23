@@ -20,61 +20,67 @@ jest.mock("./constants/serializedNeuralNetworks", () => {
 });
 
 describe("App", () => {
-  let predictPriceButton;
+  describe("unit tests", () => {
+    let predictPriceButton;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+    beforeEach(() => {
+      jest.clearAllMocks();
 
-    render(<App />);
+      render(<App />);
 
-    const continueButton = screen.getByText("Continue");
+      const continueButton = screen.getByText("Continue");
 
-    fireEvent.click(continueButton);
-  });
-
-  test("Predict Price button is rendered after clicking the continue button", () => {
-    predictPriceButton = screen.getByText("Predict Price");
-    expect(predictPriceButton).toBeInTheDocument();
-  });
-
-  test("Predict Price button functions correctly in Performance Mode", async () => {
-    predictPriceButton = screen.getByText("Predict Price");
-    fireEvent.click(predictPriceButton);
-
-    await waitFor(() =>
-      expect(gameSerializedNeuralNetwork.run).toHaveBeenCalled()
-    );
-
-    await waitFor(() => {
-      const price =
-        gameSerializedNeuralNetwork.expectedTestPriceModifier *
-        gameSerializedNeuralNetwork.expectedTestPrice;
-      const priceHeading = screen.getByText("Price: $" + price.toFixed(2));
-
-      expect(priceHeading).toBeInTheDocument();
+      fireEvent.click(continueButton);
     });
-  });
 
-  test(
-    "Predict Price button updates Price heading correctly in Training Mode",
-    async () => {
-      const trainingModeCheckbox = screen.getByText("Training Mode:");
+    test("Predict Price button is rendered after clicking the continue button", () => {
+      predictPriceButton = screen.getByText("Predict Price");
+      expect(predictPriceButton).toBeInTheDocument();
+    });
 
-      fireEvent.click(trainingModeCheckbox);
+    test("Predict Price button functions correctly in Performance Mode", async () => {
       predictPriceButton = screen.getByText("Predict Price");
       fireEvent.click(predictPriceButton);
 
-      await waitFor(
-        () => {
-          const priceHeading = screen.getByText(
-            gameSerializedNeuralNetwork.expectedTestTrainingPrice
-          );
-
-          expect(priceHeading).toBeInTheDocument();
-        },
-        { timeout: gameSerializedNeuralNetwork.expectedTestTrainingTimeout }
+      await waitFor(() =>
+        expect(gameSerializedNeuralNetwork.run).toHaveBeenCalled()
       );
-    },
-    gameSerializedNeuralNetwork.expectedTestTrainingTimeout
-  );
+
+      await waitFor(() => {
+        const price =
+          gameSerializedNeuralNetwork.expectedTestPriceModifier *
+          gameSerializedNeuralNetwork.expectedTestPrice;
+        const priceHeading = screen.getByText("Price: $" + price.toFixed(2));
+
+        expect(priceHeading).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("integration test", () => {
+    test(
+      "Predict Price button updates Price heading correctly in Training Mode",
+      async () => {
+        jest.clearAllMocks();
+
+        render(<App />);
+
+        fireEvent.click(screen.getByText("Continue"));
+        fireEvent.click(screen.getByText("Training Mode:"));
+        fireEvent.click(screen.getByText("Predict Price"));
+
+        await waitFor(
+          () => {
+            const priceHeading = screen.getByText(
+              gameSerializedNeuralNetwork.expectedTestTrainingPrice
+            );
+
+            expect(priceHeading).toBeInTheDocument();
+          },
+          { timeout: gameSerializedNeuralNetwork.expectedTestTrainingTimeout }
+        );
+      },
+      gameSerializedNeuralNetwork.expectedTestTrainingTimeout
+    );
+  });
 });

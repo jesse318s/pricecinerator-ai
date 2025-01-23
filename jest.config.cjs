@@ -5,4 +5,7 @@ module.exports = {
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/src/test/fileMock.js",
     "\\.(css|scss)$": "identity-obj-proxy",
   },
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageReporters: ["json", "lcov", "text", "clover"],
 };
