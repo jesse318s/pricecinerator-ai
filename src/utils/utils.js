@@ -25,12 +25,7 @@ const validateProperty = (key, val) => {
     );
 };
 
-/**
- * @description Filters the random training data object to remove the year property
- *
- * @param {Object} randomTrainingData - Data to filter
- * @returns {Object} Filtered data object
- */
+// Filters the random training data object to remove the year property
 const filterRandomTrainingData = (randomTrainingData) => {
   return Object.keys(randomTrainingData).reduce((acc, key) => {
     const val = randomTrainingData[key];
