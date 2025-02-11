@@ -4,7 +4,7 @@ This app is for predicting prices and developing neural networks for predicting 
 
 ## Adding a New Neural Network (Development)
 
-1. Add the new training data to the trainingData.js file in the constants folder
+1. Add the new training data (having an input year, having an output price, and entirely normalized between 0 and 1) to the trainingData.js file in the constants folder
 2. Add the new serialized neural network, as an empty object, to the serializedNeuralNetwork.js file in the constants folder
 3. Add the new neural network settings to the neuralNetworkSettings.js file in the constants folder (be sure to update all of them)
 4. Start the app by using the "npm run dev" command

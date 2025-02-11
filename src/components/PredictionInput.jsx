@@ -25,7 +25,7 @@ function PredictionInput({
                 type="number"
                 id="year"
                 name="year"
-                value={predictionObjectInput.year}
+                value={isNaN(predictionObjectInput.year) ? "" : predictionObjectInput.year}
                 onChange={(e) =>
                   setPredictionObjectInput({
                     ...predictionObjectInput,
