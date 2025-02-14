@@ -1,7 +1,7 @@
 import { yearNormalizationFactor } from "../App";
 
-// Validates a property value of a random training data object
-const validateProperty = (key, val) => {
+// Validates a binary property of an object
+export const validateBinaryProperty = (key, val) => {
   if (val === null)
     throw new Error('Value for key "' + key + '" cannot be null.');
 
@@ -19,10 +19,8 @@ const validateProperty = (key, val) => {
       'Value for key "' + key + '" cannot be Infinity or -Infinity.'
     );
 
-  if (val < 0 || val > 1)
-    throw new Error(
-      'Value for key "' + key + '" must be between 0 and 1 (normalized).'
-    );
+  if (val !== 0 && val !== 1)
+    throw new Error('Value for key "' + key + '" must be either 0 or 1.');
 };
 
 // Filters the random training data object to remove the year property
@@ -30,9 +28,10 @@ const filterRandomTrainingData = (randomTrainingData) => {
   return Object.keys(randomTrainingData).reduce((acc, key) => {
     const val = randomTrainingData[key];
 
-    validateProperty(key, val);
-
-    if (key !== "year") acc[key] = val;
+    if (key !== "year") {
+      acc[key] = val;
+      validateBinaryProperty(key, val);
+    }
 
     return acc;
   }, {});

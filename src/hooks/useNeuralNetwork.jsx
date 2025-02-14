@@ -3,7 +3,10 @@ import * as neuralNetworkSettings from "../constants/neuralNetworkSettings";
 import * as serializedNeuralNetworks from "../constants/serializedNeuralNetworks";
 import * as neuralNetworkTrainingData from "../constants/trainingData";
 import * as brain from "brain.js";
-import { generateTrainingObjects } from "../utils/utils";
+import {
+  validateBinaryProperty,
+  generateTrainingObjects,
+} from "../utils/utils";
 
 export function useNeuralNetwork(
   setErrMsgTxt,
@@ -75,6 +78,14 @@ export function useNeuralNetwork(
         neuralNetworkConfig.current
       );
       const trainingDataInitialLength = trainingData.current.length;
+
+      trainingData.current.forEach(({ input }) => {
+        Object.keys(input).forEach((key) => {
+          const val = input[key];
+
+          if (key !== "year") validateBinaryProperty(key, val);
+        });
+      });
 
       for (const [key, value] of objectGenerationOptions.current) {
         const newTrainingData = generateTrainingObjects(
