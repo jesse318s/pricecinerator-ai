@@ -1667,22 +1667,3 @@ export const bitcoinTrainingData = [
     },
   },
 ];
-
-export const exampleNetworkTrainingData = [
-  {
-    input: {
-      year: 0.2025,
-    },
-    output: {
-      price: 0.0001,
-    },
-  },
-  {
-    input: {
-      year: 0.2026,
-    },
-    output: {
-      price: 0.0002,
-    },
-  },
-];

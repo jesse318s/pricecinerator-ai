@@ -481,5 +481,3 @@ export const bitcoinSerializedNeuralNetwork = {
     };
   },
 };
-
-export const exampleNetworkSerializedNeuralNetwork = {};
