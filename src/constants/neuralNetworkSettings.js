@@ -6,22 +6,16 @@ export const neuralNetworkTimeoutDelay = 200; // Delay in ms before running the 
 export const neuralNetworkTypes = {
   game: "game",
   bitcoin: "bitcoin",
-  exampleNetwork: "exampleNetwork",
-  movieTicket: "movieTicket",
 }; // Types of neural networks available
 
 export const neuralNetworkYearRanges = {
   game: { min: 1977, max: 2999 },
   bitcoin: { min: 2024, max: 2199 },
-  exampleNetwork: { min: 2025, max: 2026 },
-  movieTicket: { min: 1980, max: 2030 },
 }; // The min and max year allowed for user input
 
 export const neuralNetworkPriceModifiers = {
   game: 1000,
   bitcoin: 10000000,
-  exampleNetwork: 1000,
-  movieTicket: 100,
 }; // Multiplier for the price prediction output
 
 //----------------------
