@@ -23,7 +23,7 @@
     "@testing-library/react": "^16.1.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "babel-plugin-react-compiler": "^19.0.0-beta-201e55d-20241215",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.0",
@@ -35,7 +35,10 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "react": "^19.0.0",
-    "vite": "^5.1.6",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "vite": "^6.1.1"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
   }
 }
