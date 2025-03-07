@@ -6,10 +6,12 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "deploy:prod": "npm run test && npm run lint && npm audit && echo Proceeding to build... && pause && npm run build && gh-pages -d dist",
+    "deploy:prod": "npm run test:e2e && npm run test && npm run lint && npm audit && echo Proceeding to build... && pause && npm run build && gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "test": "jest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -19,6 +21,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.24.3",
     "@babel/preset-react": "^7.24.1",
+    "@playwright/test": "^1.51.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^19.0.0",

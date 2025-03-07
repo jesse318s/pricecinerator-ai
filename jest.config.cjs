@@ -8,4 +8,5 @@ module.exports = {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageReporters: ["json", "lcov", "text", "clover"],
+  testPathIgnorePatterns: ["/node_modules/", ".spec.js"],
 };

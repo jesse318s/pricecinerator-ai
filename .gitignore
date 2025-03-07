@@ -25,3 +25,7 @@ coverage/
 *.sw?
 
 .npmrc
+
+# Playwright
+/test-results/
+/playwright-report/
