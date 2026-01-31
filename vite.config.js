@@ -14,4 +14,11 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      stream: "stream-browserify",
+      events: "events",
+      buffer: "buffer",
+    },
+  },
 });
